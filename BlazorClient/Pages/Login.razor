@@ -1,9 +1,10 @@
 @page "/login"
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
-
-<section class="bg-green">
-    <div class="mask d-flex align-items-center gradient-custom-3">
+@inject IJSRuntime JSRuntime
+@using System.Text.Json
+<section class="bg-green ">
+    <div class="mask d-flex align-items-center justify-content-center gradient-custom-3 vh-100">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-12 col-md-8 col-lg-6 col-xl-5">
@@ -12,12 +13,12 @@
                             <h2 class="text-center mb-1">Вход в аккаунт</h2>
                             <form>
                                 <div class="form-group mb-3 text-start">
-                                    <label for="email"><b>Email</b></label>
+                                    <label for="email"><b>Почта</b></label>
                                     <input type="email" class="form-control" @bind="Email"
                                         placeholder="example@mail.com">
                                     @if (ShowEmailMessage)
                                     {
-                                        <p class="text-danger">Email не введен</p>
+                                        <p class="text-danger">Почта не введена</p>
                                     }
                                     @if (ShowInvalidEmailMessage && !ShowEmailMessage)
                                     {
@@ -43,12 +44,10 @@
                                 }
 
                                 <div class="w-100 d-flex justify-content-center">
-                                    <button type="button" class="btn btn-primary btn-lgz"
-                                        @onclick="CheckFields">Войти</button>
+                                    <button type="button" class="btn btn-primary" @onclick="CheckFields">Войти</button>
                                 </div>
-                                <div <p class="text-center text-muted mt-2 mb-0">Нет аккаунта? <a href="/registration"
+                                <p class="text-center text-muted mt-2 mb-0">Нет аккаунта? <a href="/registration"
                                         class="fw-bold text-body"><u>Регистрация</u></a></p>
-                                </div>
                             </form>
                         </div>
                     </div>
@@ -65,7 +64,7 @@
     private bool ShowEmailMessage { get; set; }
     private bool ShowPasswordMessage { get; set; }
     private bool ShowInvalidEmailMessage { get; set; }
-    private bool LoginSuccess { get; set; } // Флаг успешного входа
+    private bool LoginSuccess { get; set; }
 
     private async Task CheckFields()
     {
@@ -75,23 +74,25 @@
 
         if (!ShowEmailMessage && !ShowPasswordMessage && !ShowInvalidEmailMessage)
         {
-            // Создайте объект для передачи данных на API
-            var loginData = new { Email = Email, Password = Pass };
-
-            // Отправьте данные на API входа
-            var response = await HttpClient.PostAsJsonAsync("https://survivalschool2-zozbor48.b4a.run/api/User", loginData);
-
-            if (response.IsSuccessStatusCode)
+            var userJson = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "user");
+            if (!string.IsNullOrEmpty(userJson))
             {
-                LoginSuccess = true; // Устанавливаем флаг успешного входа
-                await Task.Delay(3000); // Задержка для отображения сообщения
-                NavigationManager.NavigateTo("/"); // Перенаправляем на главную страницу
+                var user = JsonSerializer.Deserialize<User>(userJson);
+                if (user.Email == Email && user.Pass == Pass)
+                {
+                    LoginSuccess = true;
+                    NavigationManager.NavigateTo("/profile"); // Перенаправление на страницу после успешного входа
+                }
+                else
+                {
+                    // Обработка ошибки входа
+                    LoginSuccess = false;
+                }
             }
             else
             {
-                LoginSuccess = false; // Сбрасываем флаг успешного входа
-                                      // Обработка ошибки входа
-                Console.WriteLine("Ошибка при входе");
+                // Обработка ошибки входа
+                LoginSuccess = false;
             }
         }
     }
@@ -110,5 +111,18 @@
         {
             return false;
         }
+    }
+
+    public class User
+    {
+        public int UserId { get; set; }
+        public string Username { get; set; } = null!;
+        public string Email { get; set; } = null!;
+        public string Pass { get; set; } = null!;
+        public string FirstName { get; set; } = null!;
+        public string LastName { get; set; } = null!;
+        public DateTime RegistrationDate { get; set; }
+        public DateTime? LastLoginDate { get; set; }
+        public int RoleId { get; set; }
     }
 }

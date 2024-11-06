@@ -3,8 +3,10 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 
-<section class="bg-green">
-    <div class="mask d-flex align-items-center gradient-custom-3">
+@using System.Text.Json
+
+<section class="bg-green ">
+    <div class="mask d-flex align-items-center gradient-custom-3 vh-100 vh-100 main-content">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-12 col-md-8 col-lg-6 col-xl-5">
@@ -14,18 +16,20 @@
                             <form>
                                 <div class="form-group mb-3 text-start">
                                     <label for="username"><b>Логин</b></label>
-                                    <input type="text" class="form-control" @bind="Username" placeholder="Введите логин">
+                                    <input type="text" class="form-control" @bind="Username"
+                                        placeholder="Введите логин">
                                     @if (ShowUsernameMessage)
                                     {
                                         <p class="text-danger">Логин не введен</p>
                                     }
                                 </div>
                                 <div class="form-group mb-4 text-start">
-                                    <label for="email"><b>Email</b></label>
-                                    <input type="email" class="form-control" @bind="Email" placeholder="example@mail.com">
+                                    <label for="email"><b>Почта</b></label>
+                                    <input type="email" class="form-control" @bind="Email"
+                                        placeholder="example@mail.com">
                                     @if (ShowEmailMessage)
                                     {
-                                        <p class="text-danger">Email не введен</p>
+                                        <p class="text-danger">Почта не введена</p>
                                     }
                                     @if (ShowInvalidEmailMessage && !ShowEmailMessage)
                                     {
@@ -34,7 +38,8 @@
                                 </div>
                                 <div class="form-group mb-3 text-start">
                                     <label for="password"><b>Пароль</b></label>
-                                    <input type="password" class="form-control" @bind="Pass" placeholder="Введите пароль">
+                                    <input type="password" class="form-control" @bind="Pass"
+                                        placeholder="Введите пароль">
                                     @if (ShowPasswordMessage)
                                     {
                                         <p class="text-danger">Пароль не введен</p>
@@ -57,23 +62,13 @@
                                     }
                                 </div>
 
-                                <!-- Отображение сообщения об успешной регистрации -->
-                                @if (RegistrationSuccess)
-                                {
-                                    <div class="alert alert-success" role="alert">
-                                        Вы успешно зарегистрировались!
-                                    </div>
-                                }
-
                                 <div class="w-100 d-flex justify-content-center">
-                                    <button type="button" class="btn btn-primary btn-lg"
-                                            @onclick="CheckFields">
+                                    <button type="button" class="btn btn-primary btn-lg" @onclick="CheckFields">
                                         Зарегистрироваться
                                     </button>
                                 </div>
                                 <p class="text-center text-muted mt-2 mb-0">
-                                    Уже есть аккаунт? <a href="/login"
-                                                         class="fw-bold text-body"><u>Вход</u></a>
+                                    Уже есть аккаунт? <a href="/login" class="fw-bold text-body"><u>Вход</u></a>
                                 </p>
                             </form>
                         </div>
@@ -98,8 +93,6 @@
     private bool ShowLastNameMessage { get; set; }
     private bool ShowInvalidEmailMessage { get; set; }
 
-    private bool RegistrationSuccess { get; set; } // Флаг успешной регистрации
-
     public class User
     {
         public int UserId { get; set; }
@@ -117,7 +110,7 @@
     {
         ShowUsernameMessage = string.IsNullOrEmpty(Username);
         ShowEmailMessage = string.IsNullOrEmpty(Email);
-        ShowPasswordMessage = string.IsNullOrWhiteSpace(Pass); 
+        ShowPasswordMessage = string.IsNullOrWhiteSpace(Pass);
         ShowFirstNameMessage = string.IsNullOrEmpty(FirstName);
         ShowLastNameMessage = string.IsNullOrEmpty(LastName);
         ShowInvalidEmailMessage = !IsValidEmail(Email);
@@ -136,23 +129,27 @@
                     RoleId = 1 // Установите значение роли по умолчанию
                 };
 
-                HttpClient client = new HttpClient();
-                client.BaseAddress = new Uri("https://apisurvival-i6wx8ysg.b4a.run/");
-                HttpResponseMessage response = await client.PostAsJsonAsync("api/User", user);
-          
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("https://apisurvival-i6wx8ysg.b4a.run/");
+            HttpResponseMessage response = await client.PostAsJsonAsync("api/User", user);
 
             if (response.IsSuccessStatusCode)
             {
-                RegistrationSuccess = true; // Устанавливаем флаг успешной регистрации
-                await Task.Delay(3000); // Задержка для отображения сообщения
+                // Сохранение данных пользователя в localStorage
+                await JSRuntime.InvokeVoidAsync("localStorage.setItem", "user", JsonSerializer.Serialize(user));
+
+                // Отладочный вывод для проверки сохранения данных
+                var storedUser = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "user");
+                Console.WriteLine($"User data stored in localStorage: {storedUser}");
+
+                // Отладочный вывод для проверки перехода на страницу
+                Console.WriteLine("Navigating to /login");
                 NavigationManager.NavigateTo("/login");
             }
             else
             {
-                // Обработка ошибки
-                Console.WriteLine("Ошибка при регистрации");
-                await ShowErrorAlert("Ошибка при регистрации");
-                RegistrationSuccess = false; // Сбрасываем флаг успешной регистрации
+                // Отладочный вывод для проверки статуса ответа
+                Console.WriteLine($"API request failed with status code: {response.StatusCode}");
             }
         }
     }
@@ -164,7 +161,6 @@
 
         try
         {
-            // Проверка на соответствие формату email
             var addr = new System.Net.Mail.MailAddress(email);
             return addr.Address == email;
         }
@@ -172,15 +168,5 @@
         {
             return false;
         }
-    }
-
-    private async Task ShowSuccessAlert()
-    {
-        await JSRuntime.InvokeVoidAsync("Swal.fire", "Успех!", "Вы успешно зарегистрировались", "success");
-    }
-
-    private async Task ShowErrorAlert(string errorMessage)
-    {
-        await JSRuntime.InvokeVoidAsync("Swal.fire", "Ошибка!", errorMessage, "error");
     }
 }
