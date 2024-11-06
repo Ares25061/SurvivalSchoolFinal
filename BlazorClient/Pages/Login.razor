@@ -1,0 +1,114 @@
+@page "/login"
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+<section class="bg-green">
+    <div class="mask d-flex align-items-center gradient-custom-3">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                    <div class="card border shadow p-3 mb-5 bg-white" style="border-radius: 15px;">
+                        <div class="card-body">
+                            <h2 class="text-center mb-1">Вход в аккаунт</h2>
+                            <form>
+                                <div class="form-group mb-3 text-start">
+                                    <label for="email"><b>Email</b></label>
+                                    <input type="email" class="form-control" @bind="Email"
+                                        placeholder="example@mail.com">
+                                    @if (ShowEmailMessage)
+                                    {
+                                        <p class="text-danger">Email не введен</p>
+                                    }
+                                    @if (ShowInvalidEmailMessage && !ShowEmailMessage)
+                                    {
+                                        <p class="text-danger">Неверный формат email</p>
+                                    }
+                                </div>
+                                <div class="form-group mb-3 text-start">
+                                    <label for="password"><b>Пароль</b></label>
+                                    <input type="password" class="form-control" @bind="Pass"
+                                        placeholder="Введите пароль">
+                                    @if (ShowPasswordMessage)
+                                    {
+                                        <p class="text-danger">Пароль не введен</p>
+                                    }
+                                </div>
+
+                                <!-- Отображение сообщения об успешном входе -->
+                                @if (LoginSuccess)
+                                {
+                                    <div class="alert alert-success" role="alert">
+                                        Вы успешно вошли в аккаунт!
+                                    </div>
+                                }
+
+                                <div class="w-100 d-flex justify-content-center">
+                                    <button type="button" class="btn btn-primary btn-lgz"
+                                        @onclick="CheckFields">Войти</button>
+                                </div>
+                                <div <p class="text-center text-muted mt-2 mb-0">Нет аккаунта? <a href="/registration"
+                                        class="fw-bold text-body"><u>Регистрация</u></a></p>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    public string Email { get; set; }
+    public string Pass { get; set; }
+
+    private bool ShowEmailMessage { get; set; }
+    private bool ShowPasswordMessage { get; set; }
+    private bool ShowInvalidEmailMessage { get; set; }
+    private bool LoginSuccess { get; set; } // Флаг успешного входа
+
+    private async Task CheckFields()
+    {
+        ShowEmailMessage = string.IsNullOrEmpty(Email);
+        ShowPasswordMessage = string.IsNullOrWhiteSpace(Pass);
+        ShowInvalidEmailMessage = !IsValidEmail(Email);
+
+        if (!ShowEmailMessage && !ShowPasswordMessage && !ShowInvalidEmailMessage)
+        {
+            // Создайте объект для передачи данных на API
+            var loginData = new { Email = Email, Password = Pass };
+
+            // Отправьте данные на API входа
+            var response = await HttpClient.PostAsJsonAsync("https://survivalschool2-zozbor48.b4a.run/api/User", loginData);
+
+            if (response.IsSuccessStatusCode)
+            {
+                LoginSuccess = true; // Устанавливаем флаг успешного входа
+                await Task.Delay(3000); // Задержка для отображения сообщения
+                NavigationManager.NavigateTo("/"); // Перенаправляем на главную страницу
+            }
+            else
+            {
+                LoginSuccess = false; // Сбрасываем флаг успешного входа
+                                      // Обработка ошибки входа
+                Console.WriteLine("Ошибка при входе");
+            }
+        }
+    }
+
+    private bool IsValidEmail(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+            return false;
+
+        try
+        {
+            var addr = new System.Net.Mail.MailAddress(email);
+            return addr.Address == email;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+}
