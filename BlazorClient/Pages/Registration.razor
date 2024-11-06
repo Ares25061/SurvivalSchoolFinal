@@ -136,7 +136,10 @@
                     RoleId = 1 // Установите значение роли по умолчанию
                 };
 
-            var response = await HttpClient.PostAsJsonAsync("https://survivalschool2-zozbor48.b4a.run/api/User", user);
+                HttpClient client = new HttpClient();
+                client.BaseAddress = new Uri("https://apisurvival-i6wx8ysg.b4a.run/");
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/User", user);
+          
 
             if (response.IsSuccessStatusCode)
             {

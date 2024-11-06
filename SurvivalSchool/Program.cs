@@ -109,7 +109,7 @@ namespace SurvivalSchool
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-            app.UseCors(builder => builder.WithOrigins(new[] { "https://apisurvival-i6wx8ysg.b4a.run", })
+            app.UseCors(builder => builder.WithOrigins(new[] { "https://apisurvival-i6wx8ysg.b4a.run/", })
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowAnyOrigin());
