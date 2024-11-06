@@ -1,0 +1,183 @@
+@page "/registration"
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<section class="bg-green">
+    <div class="mask d-flex align-items-center gradient-custom-3">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                    <div class="card border shadow p-3 mb-5 bg-white" style="border-radius: 15px;">
+                        <div class="card-body">
+                            <h2 class="text-center mb-1">Создать аккаунт</h2>
+                            <form>
+                                <div class="form-group mb-3 text-start">
+                                    <label for="username"><b>Логин</b></label>
+                                    <input type="text" class="form-control" @bind="Username" placeholder="Введите логин">
+                                    @if (ShowUsernameMessage)
+                                    {
+                                        <p class="text-danger">Логин не введен</p>
+                                    }
+                                </div>
+                                <div class="form-group mb-4 text-start">
+                                    <label for="email"><b>Email</b></label>
+                                    <input type="email" class="form-control" @bind="Email" placeholder="example@mail.com">
+                                    @if (ShowEmailMessage)
+                                    {
+                                        <p class="text-danger">Email не введен</p>
+                                    }
+                                    @if (ShowInvalidEmailMessage && !ShowEmailMessage)
+                                    {
+                                        <p class="text-danger">Неверный формат email</p>
+                                    }
+                                </div>
+                                <div class="form-group mb-3 text-start">
+                                    <label for="password"><b>Пароль</b></label>
+                                    <input type="password" class="form-control" @bind="Pass" placeholder="Введите пароль">
+                                    @if (ShowPasswordMessage)
+                                    {
+                                        <p class="text-danger">Пароль не введен</p>
+                                    }
+                                </div>
+                                <div class="form-group mb-3 text-start">
+                                    <label for="firstName"><b>Имя</b></label>
+                                    <input type="text" class="form-control" placeholder="Иван" @bind="FirstName">
+                                    @if (ShowFirstNameMessage)
+                                    {
+                                        <p class="text-danger">Имя не введено</p>
+                                    }
+                                </div>
+                                <div class="form-group mb-3 text-start">
+                                    <label for="lastName"><b>Фамилия</b></label>
+                                    <input type="text" class="form-control" @bind="LastName" placeholder="Иванов">
+                                    @if (ShowLastNameMessage)
+                                    {
+                                        <p class="text-danger">Фамилия не введена</p>
+                                    }
+                                </div>
+
+                                <!-- Отображение сообщения об успешной регистрации -->
+                                @if (RegistrationSuccess)
+                                {
+                                    <div class="alert alert-success" role="alert">
+                                        Вы успешно зарегистрировались!
+                                    </div>
+                                }
+
+                                <div class="w-100 d-flex justify-content-center">
+                                    <button type="button" class="btn btn-primary btn-lg"
+                                            @onclick="CheckFields">
+                                        Зарегистрироваться
+                                    </button>
+                                </div>
+                                <p class="text-center text-muted mt-2 mb-0">
+                                    Уже есть аккаунт? <a href="/login"
+                                                         class="fw-bold text-body"><u>Вход</u></a>
+                                </p>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    public string Username { get; set; }
+    public string Email { get; set; }
+    public string Pass { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+
+    private bool ShowUsernameMessage { get; set; }
+    private bool ShowEmailMessage { get; set; }
+    private bool ShowPasswordMessage { get; set; }
+    private bool ShowFirstNameMessage { get; set; }
+    private bool ShowLastNameMessage { get; set; }
+    private bool ShowInvalidEmailMessage { get; set; }
+
+    private bool RegistrationSuccess { get; set; } // Флаг успешной регистрации
+
+    public class User
+    {
+        public int UserId { get; set; }
+        public string Username { get; set; } = null!;
+        public string Email { get; set; } = null!;
+        public string Pass { get; set; } = null!;
+        public string FirstName { get; set; } = null!;
+        public string LastName { get; set; } = null!;
+        public DateTime RegistrationDate { get; set; }
+        public DateTime? LastLoginDate { get; set; }
+        public int RoleId { get; set; }
+    }
+
+    private async Task CheckFields()
+    {
+        ShowUsernameMessage = string.IsNullOrEmpty(Username);
+        ShowEmailMessage = string.IsNullOrEmpty(Email);
+        ShowPasswordMessage = string.IsNullOrWhiteSpace(Pass); 
+        ShowFirstNameMessage = string.IsNullOrEmpty(FirstName);
+        ShowLastNameMessage = string.IsNullOrEmpty(LastName);
+        ShowInvalidEmailMessage = !IsValidEmail(Email);
+
+        if (!ShowUsernameMessage && !ShowEmailMessage && !ShowPasswordMessage && !ShowFirstNameMessage && !ShowLastNameMessage
+        && !ShowInvalidEmailMessage)
+        {
+            var user = new User
+                {
+                    Username = Username,
+                    Email = Email,
+                    Pass = Pass,
+                    FirstName = FirstName,
+                    LastName = LastName,
+                    RegistrationDate = DateTime.UtcNow,
+                    RoleId = 1 // Установите значение роли по умолчанию
+                };
+
+            var response = await HttpClient.PostAsJsonAsync("https://survivalschool2-zozbor48.b4a.run/api/User", user);
+
+            if (response.IsSuccessStatusCode)
+            {
+                RegistrationSuccess = true; // Устанавливаем флаг успешной регистрации
+                await Task.Delay(3000); // Задержка для отображения сообщения
+                NavigationManager.NavigateTo("/login");
+            }
+            else
+            {
+                // Обработка ошибки
+                Console.WriteLine("Ошибка при регистрации");
+                await ShowErrorAlert("Ошибка при регистрации");
+                RegistrationSuccess = false; // Сбрасываем флаг успешной регистрации
+            }
+        }
+    }
+
+    private bool IsValidEmail(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+            return false;
+
+        try
+        {
+            // Проверка на соответствие формату email
+            var addr = new System.Net.Mail.MailAddress(email);
+            return addr.Address == email;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private async Task ShowSuccessAlert()
+    {
+        await JSRuntime.InvokeVoidAsync("Swal.fire", "Успех!", "Вы успешно зарегистрировались", "success");
+    }
+
+    private async Task ShowErrorAlert(string errorMessage)
+    {
+        await JSRuntime.InvokeVoidAsync("Swal.fire", "Ошибка!", errorMessage, "error");
+    }
+}

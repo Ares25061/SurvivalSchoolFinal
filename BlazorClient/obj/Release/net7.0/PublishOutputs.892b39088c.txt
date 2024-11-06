@@ -1,0 +1,1 @@
+C:\Users\dudin\OneDrive\Документы\GitHub\SurvivalSchool\BlazorClient\bin\Release\net7.0\publish\web.config
