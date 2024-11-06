@@ -1,74 +1,72 @@
-@* @page "/profile"
-@inject HttpClient HttpClient
-@inject NavigationManager NavigationManager
+@page "/profile"
+@inject IJSRuntime JSRuntime
+
+@using System.Text.Json
+
+<nav class="py-3 navbar navbar-expand-lg fixed-top auto-hiding-navbar">
+    <div class="container">
+        <a class="navbar-brand" href="/">Школа выживания</a>
+    </div>
+</nav>
 
 <section class="bg-green">
-<div class="mask d-flex align-items-center gradient-custom-3 vh-100">
-<div class="container">
-<div class="row justify-content-center">
-<div class="col-12 col-md-8 col-lg-6 col-xl-5">
-<div class="card border shadow p-3 mb-5 bg-white" style="border-radius: 15px;">
-<div class="card-body">
-<h2 class="text-center mb-1">Личный кабинет</h2>
-@if (User != null)
-{
-<div class="form-group mb-3 text-start">
-<label for="username"><b>Логин</b></label>
-<input type="text" class="form-control" @bind="User.Username" disabled>
-</div>
-<div class="form-group mb-3 text-start">
-<label for="email"><b>Почта</b></label>
-<input type="email" class="form-control" @bind="User.Email" disabled>
-</div>
-<div class="form-group mb-3 text-start">
-<label for="firstName"><b>Имя</b></label>
-<input type="text" class="form-control" @bind="User.FirstName" disabled>
-</div>
-<div class="form-group mb-3 text-start">
-<label for="lastName"><b>Фамилия</b></label>
-<input type="text" class="form-control" @bind="User.LastName" disabled>
-</div>
-<div class="form-group mb-3 text-start">
-<label for="registrationDate"><b>Дата регистрации</b></label>
-<input type="text" class="form-control" @bind="User.RegistrationDate.ToString()" disabled>
-</div>
-<div class="form-group mb-3 text-start">
-<label for="lastLoginDate"><b>Последний вход</b></label>
-<input type="text" class="form-control" @bind="User.LastLoginDate?.ToString() ?? 'Неизвестно'" disabled>
-</div>
-}
-else
-{
-<p class="text-center">Загрузка информации о пользователе...</p>
-}
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
+    <div class="mask d-flex align-items-center gradient-custom-3 vh-100 main-content">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                    <div class="card border shadow p-3 mb-5 bg-white" style="border-radius: 15px;">
+                        <div class="card-body">
+                            <h2 class="text-center mb-1">Личный кабинет</h2>
+                            @if (BlazorUser != null && BlazorUser.User != null)
+                            {
+                                <div class="form-group mb-3 text-start">
+                                    <label for="username"><b>Логин</b></label>
+                                    <p>@BlazorUser.User.Username</p>
+                                </div>
+                                <div class="form-group mb-3 text-start">
+                                    <label for="email"><b>Почта</b></label>
+                                    <p>@BlazorUser.User.Email</p>
+                                </div>
+                                <div class="form-group mb-3 text-start">
+                                    <label for="firstName"><b>Имя</b></label>
+                                    <p>@BlazorUser.User.FirstName</p>
+                                </div>
+                                <div class="form-group mb-3 text-start">
+                                    <label for="lastName"><b>Фамилия</b></label>
+                                    <p>@BlazorUser.User.LastName</p>
+                                </div>
+                                <div class="form-group mb-3 text-start">
+                                    <label for="registrationDate"><b>Дата регистрации</b></label>
+                                    <p>@BlazorUser.User.RegistrationDate.ToString("dd.MM.yyyy")</p>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-danger" role="alert">
+                                    Информация о пользователе не найдена.
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 
 @code {
-public class User
-{
-public int UserId { get; set; }
-public string Username { get; set; } = null!;
-public string Email { get; set; } = null!;
-public string Pass { get; set; } = null!;
-public string FirstName { get; set; } = null!;
-public string LastName { get; set; } = null!;
-public DateTime RegistrationDate { get; set; }
-public DateTime? LastLoginDate { get; set; }
-public int RoleId { get; set; }
-}
+    private BlazorUser BlazorUser { get; set; }
+
+    //бро, я не знаю как это сделать, у меня лапки.
+    //надо как-то сделать так, чтобы он мог брать данные с апишки, а не локально.
+    protected override async Task OnInitializedAsync()
+    {
+        var userJson = await JSRuntime.InvokeAsync<string>("localStorage.getItem", new object[] { "user" });
+        if (!string.IsNullOrEmpty(userJson))
+        {
+            BlazorUser = JsonSerializer.Deserialize<BlazorUser>(userJson);
+        }
+    }
 
 
-protected override async Task OnInitializedAsync()
-{
-// Здесь нужно получить информацию о пользователе из API
-// Например, если у вас есть идентификатор пользователя в сессии или куки
-int userId = 1; // Замените на реальный идентификатор пользователя
-User = await HttpClient.GetFromJsonAsync<User>($"https://apisurvival-i6wx8ysg.b4a.run/api/User/{userId}");
 }
-} *@

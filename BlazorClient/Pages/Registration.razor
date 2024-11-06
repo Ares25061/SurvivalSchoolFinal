@@ -93,19 +93,6 @@
     private bool ShowLastNameMessage { get; set; }
     private bool ShowInvalidEmailMessage { get; set; }
 
-    public class User
-    {
-        public int UserId { get; set; }
-        public string Username { get; set; } = null!;
-        public string Email { get; set; } = null!;
-        public string Pass { get; set; } = null!;
-        public string FirstName { get; set; } = null!;
-        public string LastName { get; set; } = null!;
-        public DateTime RegistrationDate { get; set; }
-        public DateTime? LastLoginDate { get; set; }
-        public int RoleId { get; set; }
-    }
-
     private async Task CheckFields()
     {
         ShowUsernameMessage = string.IsNullOrEmpty(Username);
@@ -135,15 +122,14 @@
 
             if (response.IsSuccessStatusCode)
             {
+                //я уже не знаю что это и зачем нам запоминать это
+
+                var createdUser = await response.Content.ReadFromJsonAsync<User>();
+                user.UserId = createdUser.UserId; // Получаем UserId от сервера
+
                 // Сохранение данных пользователя в localStorage
-                await JSRuntime.InvokeVoidAsync("localStorage.setItem", "user", JsonSerializer.Serialize(user));
-
-                // Отладочный вывод для проверки сохранения данных
-                var storedUser = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "user");
-                Console.WriteLine($"User data stored in localStorage: {storedUser}");
-
-                // Отладочный вывод для проверки перехода на страницу
-                Console.WriteLine("Navigating to /login");
+                await JSRuntime.InvokeVoidAsync("localStorage.setItem", new object[] { "user", JsonSerializer.Serialize(user) });
+                var storedUser = await JSRuntime.InvokeAsync<string>("localStorage.getItem", new object[] { "user" });
                 NavigationManager.NavigateTo("/login");
             }
             else

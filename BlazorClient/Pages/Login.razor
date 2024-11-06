@@ -1,16 +1,17 @@
 @page "/login"
-@inject HttpClient HttpClient
-@inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+
 @using System.Text.Json
+
 <section class="bg-green ">
-    <div class="mask d-flex align-items-center justify-content-center gradient-custom-3 vh-100">
+    <div class="mask d-flex align-items-center gradient-custom-3 vh-100 main-content">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-12 col-md-8 col-lg-6 col-xl-5">
                     <div class="card border shadow p-3 mb-5 bg-white" style="border-radius: 15px;">
                         <div class="card-body">
-                            <h2 class="text-center mb-1">Вход в аккаунт</h2>
+                            <h2 class="text-center mb-1">Вход</h2>
                             <form>
                                 <div class="form-group mb-3 text-start">
                                     <label for="email"><b>Почта</b></label>
@@ -34,20 +35,19 @@
                                         <p class="text-danger">Пароль не введен</p>
                                     }
                                 </div>
-
-                                <!-- Отображение сообщения об успешном входе -->
-                                @if (LoginSuccess)
+                                @if (!LoginSuccess && !string.IsNullOrEmpty(Email) && !string.IsNullOrEmpty(Pass))
                                 {
-                                    <div class="alert alert-success" role="alert">
-                                        Вы успешно вошли в аккаунт!
-                                    </div>
+                                    <p class="text-danger">Неверный ввод почты или пароля</p>
                                 }
-
                                 <div class="w-100 d-flex justify-content-center">
-                                    <button type="button" class="btn btn-primary" @onclick="CheckFields">Войти</button>
+                                    <button type="button" class="btn btn-primary btn-lg" @onclick="CheckFields">
+                                        Войти
+                                    </button>
                                 </div>
-                                <p class="text-center text-muted mt-2 mb-0">Нет аккаунта? <a href="/registration"
-                                        class="fw-bold text-body"><u>Регистрация</u></a></p>
+                                <p class="text-center text-muted mt-2 mb-0">
+                                    Нет аккаунта? <a href="/registration"
+                                        class="fw-bold text-body"><u>Регистрация</u></a>
+                                </p>
                             </form>
                         </div>
                     </div>
@@ -74,7 +74,9 @@
 
         if (!ShowEmailMessage && !ShowPasswordMessage && !ShowInvalidEmailMessage)
         {
-            var userJson = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "user");
+            //localStorage фигня
+
+            var userJson = await JSRuntime.InvokeAsync<string>("localStorage.getItem", new object[] { "user" });
             if (!string.IsNullOrEmpty(userJson))
             {
                 var user = JsonSerializer.Deserialize<User>(userJson);
@@ -116,13 +118,7 @@
     public class User
     {
         public int UserId { get; set; }
-        public string Username { get; set; } = null!;
-        public string Email { get; set; } = null!;
-        public string Pass { get; set; } = null!;
-        public string FirstName { get; set; } = null!;
-        public string LastName { get; set; } = null!;
-        public DateTime RegistrationDate { get; set; }
-        public DateTime? LastLoginDate { get; set; }
-        public int RoleId { get; set; }
+        public string Email { get; set; }
+        public string Pass { get; set; }
     }
 }
