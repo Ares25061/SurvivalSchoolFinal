@@ -2087,11 +2087,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\BusinessLogic\\BusinessLogic.csproj",
+      "projectUniqueName": "C:\\Users\\User\\Documents\\GitHub\\test\\BusinessLogic\\BusinessLogic.csproj",
       "projectName": "BusinessLogic",
-      "projectPath": "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\BusinessLogic\\BusinessLogic.csproj",
+      "projectPath": "C:\\Users\\User\\Documents\\GitHub\\test\\BusinessLogic\\BusinessLogic.csproj",
       "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\BusinessLogic\\obj\\",
+      "outputPath": "C:\\Users\\User\\Documents\\GitHub\\test\\BusinessLogic\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -2109,8 +2109,8 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "projectReferences": {
-            "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\Domain\\Domain.csproj": {
-              "projectPath": "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\Domain\\Domain.csproj"
+            "C:\\Users\\User\\Documents\\GitHub\\test\\Domain\\Domain.csproj": {
+              "projectPath": "C:\\Users\\User\\Documents\\GitHub\\test\\Domain\\Domain.csproj"
             }
           }
         }

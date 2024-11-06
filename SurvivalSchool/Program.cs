@@ -109,9 +109,10 @@ namespace SurvivalSchool
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-            app.UseCors(builder => builder.WithOrigins(new[] { "https://localhost:7207", })
-            .AllowAnyHeader()
-            .AllowAnyMethod());
+            app.UseCors(builder => builder.WithOrigins(new[] { "https://test-ty0gomtw.b4a.run", })
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowAnyOrigin());
 
             app.UseHttpsRedirection();
 

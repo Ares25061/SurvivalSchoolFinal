@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\SurvivalSchool\\SurvivalSchool.csproj": {}
+    "C:\\Users\\User\\Documents\\GitHub\\test\\SurvivalSchool\\SurvivalSchool.csproj": {}
   },
   "projects": {
-    "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\BusinessLogic\\BusinessLogic.csproj": {
+    "C:\\Users\\User\\Documents\\GitHub\\test\\BusinessLogic\\BusinessLogic.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\BusinessLogic\\BusinessLogic.csproj",
+        "projectUniqueName": "C:\\Users\\User\\Documents\\GitHub\\test\\BusinessLogic\\BusinessLogic.csproj",
         "projectName": "BusinessLogic",
-        "projectPath": "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\BusinessLogic\\BusinessLogic.csproj",
+        "projectPath": "C:\\Users\\User\\Documents\\GitHub\\test\\BusinessLogic\\BusinessLogic.csproj",
         "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\BusinessLogic\\obj\\",
+        "outputPath": "C:\\Users\\User\\Documents\\GitHub\\test\\BusinessLogic\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -29,8 +29,8 @@
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\Domain\\Domain.csproj": {
-                "projectPath": "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\Domain\\Domain.csproj"
+              "C:\\Users\\User\\Documents\\GitHub\\test\\Domain\\Domain.csproj": {
+                "projectPath": "C:\\Users\\User\\Documents\\GitHub\\test\\Domain\\Domain.csproj"
               }
             }
           }
@@ -85,14 +85,14 @@
         }
       }
     },
-    "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\DataAccess\\DataAccess.csproj": {
+    "C:\\Users\\User\\Documents\\GitHub\\test\\DataAccess\\DataAccess.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\DataAccess\\DataAccess.csproj",
+        "projectUniqueName": "C:\\Users\\User\\Documents\\GitHub\\test\\DataAccess\\DataAccess.csproj",
         "projectName": "DataAccess",
-        "projectPath": "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\DataAccess\\DataAccess.csproj",
+        "projectPath": "C:\\Users\\User\\Documents\\GitHub\\test\\DataAccess\\DataAccess.csproj",
         "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\DataAccess\\obj\\",
+        "outputPath": "C:\\Users\\User\\Documents\\GitHub\\test\\DataAccess\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -110,8 +110,8 @@
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\Domain\\Domain.csproj": {
-                "projectPath": "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\Domain\\Domain.csproj"
+              "C:\\Users\\User\\Documents\\GitHub\\test\\Domain\\Domain.csproj": {
+                "projectPath": "C:\\Users\\User\\Documents\\GitHub\\test\\Domain\\Domain.csproj"
               }
             }
           }
@@ -166,14 +166,14 @@
         }
       }
     },
-    "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\Domain\\Domain.csproj": {
+    "C:\\Users\\User\\Documents\\GitHub\\test\\Domain\\Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\Domain\\Domain.csproj",
+        "projectUniqueName": "C:\\Users\\User\\Documents\\GitHub\\test\\Domain\\Domain.csproj",
         "projectName": "Domain",
-        "projectPath": "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\Domain\\Domain.csproj",
+        "projectPath": "C:\\Users\\User\\Documents\\GitHub\\test\\Domain\\Domain.csproj",
         "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\Domain\\obj\\",
+        "outputPath": "C:\\Users\\User\\Documents\\GitHub\\test\\Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -243,14 +243,14 @@
         }
       }
     },
-    "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\SurvivalSchool\\SurvivalSchool.csproj": {
+    "C:\\Users\\User\\Documents\\GitHub\\test\\SurvivalSchool\\SurvivalSchool.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\SurvivalSchool\\SurvivalSchool.csproj",
+        "projectUniqueName": "C:\\Users\\User\\Documents\\GitHub\\test\\SurvivalSchool\\SurvivalSchool.csproj",
         "projectName": "SurvivalSchool",
-        "projectPath": "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\SurvivalSchool\\SurvivalSchool.csproj",
+        "projectPath": "C:\\Users\\User\\Documents\\GitHub\\test\\SurvivalSchool\\SurvivalSchool.csproj",
         "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\SurvivalSchool\\obj\\",
+        "outputPath": "C:\\Users\\User\\Documents\\GitHub\\test\\SurvivalSchool\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -268,11 +268,11 @@
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\BusinessLogic\\BusinessLogic.csproj": {
-                "projectPath": "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\BusinessLogic\\BusinessLogic.csproj"
+              "C:\\Users\\User\\Documents\\GitHub\\test\\BusinessLogic\\BusinessLogic.csproj": {
+                "projectPath": "C:\\Users\\User\\Documents\\GitHub\\test\\BusinessLogic\\BusinessLogic.csproj"
               },
-              "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\DataAccess\\DataAccess.csproj": {
-                "projectPath": "C:\\Users\\User\\Documents\\GitHub\\MySrvivalSchool\\SurvivalSchool\\DataAccess\\DataAccess.csproj"
+              "C:\\Users\\User\\Documents\\GitHub\\test\\DataAccess\\DataAccess.csproj": {
+                "projectPath": "C:\\Users\\User\\Documents\\GitHub\\test\\DataAccess\\DataAccess.csproj"
               }
             }
           }
