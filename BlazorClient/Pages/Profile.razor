@@ -1,5 +1,8 @@
 @page "/profile"
 @inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+@inject BlazorUser User
+@inject BlazorUser BlazorUser
 @using System.Text.Json
 
 <nav class="py-3 navbar navbar-expand-lg fixed-top auto-hiding-navbar">
@@ -54,18 +57,63 @@
 </section>
 
 @code {
-    private BlazorUser BlazorUser { get; set; }
+    public string Login { get; set; }
+    public string Password { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string Email { get; set; }
+    private bool NoPatronymic { get; set; }
+    private bool ShowEmailMessage { get; set; }
+    private bool ShowFirstNameMessage { get; set; }
+    private bool ShowLastNameMessage { get; set; }
+    private bool ShowInvalidEmailMessage { get; set; }
 
-    //бро, я не знаю как это сделать, у меня лапки.
-    //надо как-то сделать так, чтобы он мог брать данные с апишки, а не локально.
-    protected override async Task OnInitializedAsync()
+    User user = new User();
+
+    protected override void OnInitialized()
     {
-        var userJson = await JSRuntime.InvokeAsync<string>("localStorage.getItem", new object[] { "user" });
-        if (!string.IsNullOrEmpty(userJson))
+        if (BlazorUser.User == null)
         {
-            BlazorUser = JsonSerializer.Deserialize<BlazorUser>(userJson);
+            NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            user = BlazorUser.User;
         }
     }
 
+    private bool IsValidEmail(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+            return false;
 
+        try
+        {
+            // Проверка на соответствие формату email
+            var addr = new System.Net.Mail.MailAddress(email);
+            return addr.Address == email;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public User[] result = new User[] { };
+
+    string CurrentDate;
+    string CurrentTime;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var date = DateTime.Now;
+        CurrentTime = date.ToShortTimeString();
+        CurrentDate = date.ToShortDateString();
+        //user = BlazorUser.User;
+        //var client = new HttpClient();
+        //client.BaseAddress = new Uri("https://bankprikoloff.onrender.com/");
+        //result = await client.GetFromJsonAsync<User[]>("api/User");
+
+        return;
+    }
 }

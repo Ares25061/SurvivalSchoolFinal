@@ -1,8 +1,9 @@
 @page "/login"
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
+@inject BlazorUser BlazorUser
 @inject BlazorUser User
-@inject BlazorUser BlasorUser
+
 
 @using System.Text.Json
 
@@ -56,12 +57,19 @@
 </section>
 
 @code {
-    private string Username { get; set; }
-    private string Pass { get; set; }
+    User user;
     private bool ShowUsernameMessage { get; set; }
     private bool ShowPasswordMessage { get; set; }
     private bool LoginUnSuccess { get; set; }
     private bool IsLoading { get; set; }
+    private bool error = false;
+    public string Username = "";
+    public string Pass = "";
+
+    protected override void OnInitialized()
+    {
+        BlazorUser.User = new User();
+    }
 
     private async Task CheckFields()
     {
@@ -70,15 +78,14 @@
 
         if (!ShowUsernameMessage && !ShowPasswordMessage)
         {
-            IsLoading = true; 
+            IsLoading = true;
             await UserEnter();
-            IsLoading = false; 
+            IsLoading = false;
         }
     }
 
     private async Task UserEnter()
     {
-
         HttpClient client = new HttpClient();
         client.BaseAddress = new Uri("https://apisurvival-i6wx8ysg.b4a.run");
 
@@ -90,7 +97,8 @@
         HttpResponseMessage response = await client.GetAsync($"api/User/{Username}/{Pass}");
 
         if (response.IsSuccessStatusCode)
-        { 
+        {
+            BlazorUser.User = await response.Content.ReadFromJsonAsync<User>();
             NavigationManager.NavigateTo("/profile");
         }
         else
