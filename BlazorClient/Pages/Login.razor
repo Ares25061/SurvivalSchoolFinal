@@ -2,6 +2,7 @@
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
 @inject BlazorUser User
+@inject BlazorUser BlasorUser
 
 @using System.Text.Json
 
@@ -83,25 +84,14 @@
         }
 
         HttpResponseMessage response = await client.GetAsync($"api/User/{Username}/{Pass}");
-        await ShowStatus(response);
 
         if (response.IsSuccessStatusCode)
         {
-            NavigationManager.NavigateTo("/personal");
+            NavigationManager.NavigateTo("/profile");
         }
         else
         {
             LoginSuccess = false;
         }
-    }
-
-    private async Task ShowStatus(HttpResponseMessage response)
-    {
-        var title = "Уведомление";
-        var options = new
-        {
-            body = $"Ответ сервера: {response.StatusCode}",
-        };
-        await JSRuntime.InvokeVoidAsync("notification.showNotification", title, options);
     }
 }
