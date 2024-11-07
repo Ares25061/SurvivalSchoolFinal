@@ -15,16 +15,12 @@
                             <h2 class="text-center mb-1">Вход</h2>
                             <form>
                                 <div class="form-group mb-3 text-start">
-                                    <label for="email"><b>Почта</b></label>
-                                    <input type="email" class="form-control" @bind="Email"
-                                           placeholder="example@mail.com">
-                                    @if (ShowEmailMessage)
+                                    <label for="username"><b>Имя пользователя</b></label>
+                                    <input type="text" class="form-control" @bind="Username"
+                                           placeholder="Введите имя пользователя">
+                                    @if (ShowUsernameMessage)
                                     {
-                                        <p class="text-danger">Почта не введена</p>
-                                    }
-                                    @if (ShowInvalidEmailMessage && !ShowEmailMessage)
-                                    {
-                                        <p class="text-danger">Неверный формат email</p>
+                                        <p class="text-danger">Имя пользователя не введено</p>
                                     }
                                 </div>
                                 <div class="form-group mb-3 text-start">
@@ -36,9 +32,9 @@
                                         <p class="text-danger">Пароль не введен</p>
                                     }
                                 </div>
-                                @if (!LoginSuccess && !string.IsNullOrEmpty(Email) && !string.IsNullOrEmpty(Pass))
+                                @if (!LoginSuccess && !string.IsNullOrEmpty(Username) && !string.IsNullOrEmpty(Pass))
                                 {
-                                    <p class="text-danger">Неверный ввод почты или пароля</p>
+                                    <p class="text-danger">Неверный ввод имени пользователя или пароля</p>
                                 }
                                 <div class="w-100 d-flex justify-content-center">
                                     <button type="button" class="btn btn-primary btn-lg" @onclick="CheckFields">
@@ -59,35 +55,20 @@
 </section>
 
 @code {
-    private string Email { get; set; }
+    private string Username { get; set; }
     private string Pass { get; set; }
-    private bool ShowEmailMessage { get; set; }
-    private bool ShowInvalidEmailMessage { get; set; }
+    private bool ShowUsernameMessage { get; set; }
     private bool ShowPasswordMessage { get; set; }
     private bool LoginSuccess { get; set; }
 
     private async Task CheckFields()
     {
-        ShowEmailMessage = string.IsNullOrEmpty(Email);
-        ShowInvalidEmailMessage = !IsValidEmail(Email);
+        ShowUsernameMessage = string.IsNullOrEmpty(Username);
         ShowPasswordMessage = string.IsNullOrEmpty(Pass);
 
-        if (!ShowEmailMessage && !ShowInvalidEmailMessage && !ShowPasswordMessage)
+        if (!ShowUsernameMessage && !ShowPasswordMessage)
         {
             await UserEnter();
-        }
-    }
-
-    private bool IsValidEmail(string email)
-    {
-        try
-        {
-            var addr = new System.Net.Mail.MailAddress(email);
-            return addr.Address == email;
-        }
-        catch
-        {
-            return false;
         }
     }
 
@@ -96,12 +77,12 @@
         HttpClient client = new HttpClient();
         client.BaseAddress = new Uri("https://apisurvival-i6wx8ysg.b4a.run");
 
-        if (string.IsNullOrEmpty(Email) || string.IsNullOrEmpty(Pass))
+        if (string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(Pass))
         {
-            throw new ArgumentException("Login or password is empty");
+            throw new ArgumentException("Username or password is empty");
         }
 
-        HttpResponseMessage response = await client.GetAsync($"api/User/{Email}/{Pass}");
+        HttpResponseMessage response = await client.GetAsync($"api/User/{Username}/{Pass}");
         await ShowStatus(response);
 
         if (response.IsSuccessStatusCode)
