@@ -92,6 +92,19 @@
     private bool ShowLastNameMessage { get; set; }
     private bool ShowInvalidEmailMessage { get; set; }
     private bool RegistrationSuccess { get; set; } // Флаг успешной регистрации
+
+    public class User
+    {
+        public int UserId { get; set; }
+        public string Username { get; set; } = null!;
+        public string Email { get; set; } = null!;
+        public string Pass { get; set; } = null!;
+        public string FirstName { get; set; } = null!;
+        public string LastName { get; set; } = null!;
+        public DateTime RegistrationDate { get; set; }
+        public DateTime? LastLoginDate { get; set; }
+        public int RoleId { get; set; }
+    }
     private async Task CheckFields()
     {
         ShowUsernameMessage = string.IsNullOrEmpty(Username);
