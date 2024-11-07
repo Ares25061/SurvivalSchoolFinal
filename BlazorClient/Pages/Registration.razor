@@ -85,14 +85,13 @@
     public string Pass { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
-
     private bool ShowUsernameMessage { get; set; }
     private bool ShowEmailMessage { get; set; }
     private bool ShowPasswordMessage { get; set; }
     private bool ShowFirstNameMessage { get; set; }
     private bool ShowLastNameMessage { get; set; }
     private bool ShowInvalidEmailMessage { get; set; }
-
+    private bool RegistrationSuccess { get; set; } // Флаг успешной регистрации
     private async Task CheckFields()
     {
         ShowUsernameMessage = string.IsNullOrEmpty(Username);
@@ -101,7 +100,6 @@
         ShowFirstNameMessage = string.IsNullOrEmpty(FirstName);
         ShowLastNameMessage = string.IsNullOrEmpty(LastName);
         ShowInvalidEmailMessage = !IsValidEmail(Email);
-
         if (!ShowUsernameMessage && !ShowEmailMessage && !ShowPasswordMessage && !ShowFirstNameMessage && !ShowLastNameMessage
         && !ShowInvalidEmailMessage)
         {
@@ -115,38 +113,32 @@
                     RegistrationDate = DateTime.UtcNow,
                     RoleId = 1 // Установите значение роли по умолчанию
                 };
-
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri("https://apisurvival-i6wx8ysg.b4a.run/");
             HttpResponseMessage response = await client.PostAsJsonAsync("api/User", user);
 
             if (response.IsSuccessStatusCode)
             {
-                //я уже не знаю что это и зачем нам запоминать это
-
-                var createdUser = await response.Content.ReadFromJsonAsync<User>();
-                user.UserId = createdUser.UserId; // Получаем UserId от сервера
-
-                // Сохранение данных пользователя в localStorage
-                await JSRuntime.InvokeVoidAsync("localStorage.setItem", new object[] { "user", JsonSerializer.Serialize(user) });
-                var storedUser = await JSRuntime.InvokeAsync<string>("localStorage.getItem", new object[] { "user" });
+                RegistrationSuccess = true; // Устанавливаем флаг успешной регистрации
+                await Task.Delay(3000); // Задержка для отображения сообщения
                 NavigationManager.NavigateTo("/login");
             }
             else
             {
-                // Отладочный вывод для проверки статуса ответа
-                Console.WriteLine($"API request failed with status code: {response.StatusCode}");
+                // Обработка ошибки
+                Console.WriteLine("Ошибка при регистрации");
+                await ShowErrorAlert("Ошибка при регистрации");
+                RegistrationSuccess = false; // Сбрасываем флаг успешной регистрации
             }
         }
     }
-
     private bool IsValidEmail(string email)
     {
         if (string.IsNullOrWhiteSpace(email))
             return false;
-
         try
         {
+            // Проверка на соответствие формату email
             var addr = new System.Net.Mail.MailAddress(email);
             return addr.Address == email;
         }
@@ -154,5 +146,13 @@
         {
             return false;
         }
+    }
+    private async Task ShowSuccessAlert()
+    {
+        await JSRuntime.InvokeVoidAsync("Swal.fire", "Успех!", "Вы успешно зарегистрировались", "success");
+    }
+    private async Task ShowErrorAlert(string errorMessage)
+    {
+        await JSRuntime.InvokeVoidAsync("Swal.fire", "Ошибка!", errorMessage, "error");
     }
 }
