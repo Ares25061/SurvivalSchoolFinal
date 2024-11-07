@@ -27,6 +27,20 @@ namespace BusinessLogic.Services
             }
             return user.First();
         }
+        public async Task<User> GetByLogin(string login, string password)
+        {
+            var model = await _repositoryWrapper.User
+                .FindByCondition(x => x.Username == login);
+            if (model is null || model.Count == 0)
+            {
+                throw new ArgumentException("User not found");
+            }
+            if (model.First().Pass != password)
+            {
+                throw new ArgumentException("Password uncorrect");
+            }
+            return model.First();
+        }
 
         public async Task Create(User model)
         {

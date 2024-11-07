@@ -44,6 +44,18 @@ namespace SurvivalSchool.Controllers
         }
 
         /// <summary>
+        /// Получение пользователя по логину и паролю
+        /// </summary>
+        /// <param name="login">Login</param>
+        /// <param name="password">Password</param>
+        // GET api/<UserController>
+        [HttpGet("{login}/{password}")]
+        public async Task<IActionResult> GetByLogin(string login, string password)
+        {
+            var Dto = await _userService.GetByLogin(login, password);
+            return Ok(Dto.Adapt<GetUserResponse>());
+        }
+        /// <summary>
         /// Создание нового пользователя
         /// </summary>
         /// <remarks>
