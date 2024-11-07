@@ -38,7 +38,7 @@
                                     <p class="text-danger">Неверный ввод имени пользователя или пароля</p>
                                 }
                                 <div class="w-100 d-flex justify-content-center">
-                                    <button type="button" class="btn btn-primary btn-lg" @onclick="CheckFields">
+                                    <button type="button" class="btn btn-primary btn-lg" @onclick="CheckFields" disabled="@IsLoading">
                                         Войти
                                     </button>
                                 </div>
@@ -61,6 +61,7 @@
     private bool ShowUsernameMessage { get; set; }
     private bool ShowPasswordMessage { get; set; }
     private bool LoginSuccess { get; set; }
+    private bool IsLoading { get; set; }
 
     private async Task CheckFields()
     {
@@ -69,7 +70,9 @@
 
         if (!ShowUsernameMessage && !ShowPasswordMessage)
         {
+            IsLoading = true; 
             await UserEnter();
+            IsLoading = false; 
         }
     }
 
@@ -87,6 +90,7 @@
 
         if (response.IsSuccessStatusCode)
         {
+            LoginSuccess = true; 
             NavigationManager.NavigateTo("/profile");
         }
         else
