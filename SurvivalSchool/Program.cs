@@ -5,6 +5,8 @@ using Domain.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Any;
+using Microsoft.OpenApi.Interfaces;
 using Microsoft.OpenApi.Models;
 using System.Buffers;
 using System.Reflection;
@@ -48,8 +50,22 @@ namespace SurvivalSchool
                     Contact = new OpenApiContact
                     {
                         Name = "Бекэндер",
-                        Url = new Uri("https://t.me/Ares250678")
-                    }
+                        Url = new Uri("https://t.me/Ares250678"),
+                    },
+                    Extensions = new Dictionary<string, IOpenApiExtension>
+    {
+        {
+            "links", new OpenApiObject
+            {
+                {
+                    "Фронтендер", new OpenApiString("https://t.me/hukkatir")
+                },
+                {
+                    "Наш сайт", new OpenApiString("https://test-ty0gomtw.b4a.run")
+                }
+            }
+        }
+    }
                 });
 
                 // Включение комментариев из XML-файла
