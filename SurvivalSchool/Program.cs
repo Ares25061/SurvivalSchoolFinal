@@ -53,17 +53,16 @@ namespace SurvivalSchool
                         Url = new Uri("https://t.me/Ares250678"),
                     },
                     Extensions = new Dictionary<string, IOpenApiExtension>
-        {
-            {
-                "links", new OpenApiObject
-                {
-                    { "Фронтендер", new OpenApiString("https://t.me/hukkatir") },
-                    { "Наш сайт", new OpenApiString("https://test-ty0gomtw.b4a.run") }
-                }
-            }
-        }
-                
-                    });
+                    {
+                        {
+                            "links", new OpenApiObject
+                            {
+                                { "Фронтендер", new OpenApiString("https://t.me/hukkatir") },
+                                { "Наш сайт", new OpenApiString("https://test-ty0gomtw.b4a.run") }
+                            }
+                        }
+                    }
+                });
 
                 // Включение комментариев из XML-файла
                 var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -71,15 +70,15 @@ namespace SurvivalSchool
             });
 
             // Настройка CORS
-            /*builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowSpecificOrigin", builder =>
-                {
-                    builder.WithOrigins("https://localhost:7207/registration") // Разрешаем запросы с localhost:5104
-                        .AllowAnyMethod() // Разрешаем любые методы (GET, POST, PUT, DELETE)
-                        .AllowAnyHeader(); // Разрешаем любые заголовки
-                });
-            });*/
+            //builder.Services.AddCors(options =>
+            //{
+            //    options.AddPolicy("AllowSpecificOrigin", builder =>
+            //    {
+            //        builder.WithOrigins("https://localhost:7207/registration") // Разрешаем запросы с localhost:5104
+            //            .AllowAnyMethod() // Разрешаем любые методы (GET, POST, PUT, DELETE)
+            //            .AllowAnyHeader(); // Разрешаем любые заголовки
+            //    });
+            //});
 
             var app = builder.Build();
 
@@ -92,7 +91,7 @@ namespace SurvivalSchool
                     context.Database.Migrate();
                     context.Database.EnsureCreated();
 
-                    // Заполните базу данных роли
+                    // Заполните базу данных ролями
                     if (!context.Roles.Any())
                     {
                         context.Roles.AddRange(
@@ -102,7 +101,7 @@ namespace SurvivalSchool
                         );
                     }
 
-                    // Заполните базу данных категорий
+                    // Заполните базу данных категориями
                     if (!context.Categories.Any())
                     {
                         context.Categories.AddRange(
@@ -122,10 +121,11 @@ namespace SurvivalSchool
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
             app.UseCors(builder => builder.WithOrigins(new[] { "https://apisurvival-i6wx8ysg.b4a.run/", })
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
-                    .AllowAnyOrigin());
+           .AllowAnyHeader()
+           .AllowAnyMethod()
+           .AllowAnyOrigin());
 
             app.UseHttpsRedirection();
 
