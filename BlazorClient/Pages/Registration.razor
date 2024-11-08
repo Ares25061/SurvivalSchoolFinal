@@ -119,8 +119,8 @@
         ShowLastNameMessage = string.IsNullOrEmpty(LastName);
         ShowInvalidEmailMessage = !IsValidEmail(Email);
         ShowAccountExistsMessage = false;
-        if (!ShowUsernameMessage && !ShowEmailMessage && !ShowPasswordMessage && !ShowFirstNameMessage && !ShowLastNameMessage
-        && !ShowInvalidEmailMessage)
+
+        if (!ShowUsernameMessage && !ShowEmailMessage && !ShowPasswordMessage && !ShowFirstNameMessage && !ShowLastNameMessage && !ShowInvalidEmailMessage)
         {
             var user = new User
                 {
@@ -132,11 +132,10 @@
                     RegistrationDate = DateTime.UtcNow,
                     RoleId = 1 // Установите значение роли по умолчанию
                 };
+
             try
             {
-                HttpClient client = new HttpClient();
-                client.BaseAddress = new Uri("https://apisurvival-i6wx8ysg.b4a.run/");
-                HttpResponseMessage response = await client.PostAsJsonAsync("api/User", user);
+                HttpResponseMessage response = await HttpClient.PostAsJsonAsync("api/User", user);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -146,12 +145,15 @@
                 }
                 else
                 {
-
+                    // Если статус код не успешный, предполагаем, что аккаунт уже существует
+                    ShowAccountExistsMessage = true;
                     RegistrationSuccess = false; // Сбрасываем флаг успешной регистрации
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                // Логируем ошибку или обрабатываем её
+                Console.WriteLine(ex.Message);
                 ShowAccountExistsMessage = true;
             }
         }
