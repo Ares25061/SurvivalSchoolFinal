@@ -133,15 +133,15 @@
             }
 
             var user = new User
-                {
-                    Username = Username,
-                    Email = Email,
-                    Pass = Pass,
-                    FirstName = FirstName,
-                    LastName = LastName,
-                    RegistrationDate = DateTime.UtcNow,
-                    RoleId = 1 // Установите значение роли по умолчанию
-                };
+            {
+                Username = Username,
+                Email = Email,
+                Pass = Pass,
+                FirstName = FirstName,
+                LastName = LastName,
+                RegistrationDate = DateTime.UtcNow,
+                RoleId = 1 // Установите значение роли по умолчанию
+            };
 
             HttpResponseMessage response = await HttpClient.PostAsJsonAsync("api/User", user);
 
