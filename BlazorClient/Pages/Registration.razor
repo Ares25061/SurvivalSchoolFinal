@@ -95,7 +95,7 @@
     private bool ShowFirstNameMessage { get; set; }
     private bool ShowLastNameMessage { get; set; }
     private bool ShowInvalidEmailMessage { get; set; }
-    private bool ShowAccountExistsMessage { get; set; }
+    private bool ShowAccountExistsMessage { get; set; } = false;
     private bool RegistrationSuccess { get; set; } // Флаг успешной регистрации
 
     public class User
@@ -118,9 +118,8 @@
         ShowFirstNameMessage = string.IsNullOrEmpty(FirstName);
         ShowLastNameMessage = string.IsNullOrEmpty(LastName);
         ShowInvalidEmailMessage = !IsValidEmail(Email);
-        ShowAccountExistsMessage = false;
-
-        if (!ShowUsernameMessage && !ShowEmailMessage && !ShowPasswordMessage && !ShowFirstNameMessage && !ShowLastNameMessage && !ShowInvalidEmailMessage)
+        if (!ShowUsernameMessage && !ShowEmailMessage && !ShowPasswordMessage && !ShowFirstNameMessage && !ShowLastNameMessage
+        && !ShowInvalidEmailMessage)
         {
             var user = new User
                 {
@@ -132,29 +131,22 @@
                     RegistrationDate = DateTime.UtcNow,
                     RoleId = 1 // Установите значение роли по умолчанию
                 };
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("https://apisurvival-i6wx8ysg.b4a.run/");
+            HttpResponseMessage response = await client.PostAsJsonAsync("api/User", user);
 
-            try
+            if (response.IsSuccessStatusCode)
             {
-                HttpResponseMessage response = await HttpClient.PostAsJsonAsync("api/User", user);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    RegistrationSuccess = true; // Устанавливаем флаг успешной регистрации
-                    await Task.Delay(3000); // Задержка для отображения сообщения
-                    NavigationManager.NavigateTo("/login");
-                }
-                else
-                {
-                    // Если статус код не успешный, предполагаем, что аккаунт уже существует
-                   // ShowAccountExistsMessage = true;
-                    RegistrationSuccess = false; // Сбрасываем флаг успешной регистрации
-                }
+                RegistrationSuccess = true; // Устанавливаем флаг успешной регистрации
+                await Task.Delay(3000); // Задержка для отображения сообщения
+                NavigationManager.NavigateTo("/login");
             }
-            catch (Exception ex)
+            else
             {
-                // Логируем ошибку или обрабатываем её
-                Console.WriteLine(ex.Message);
+                // Обработка ошибки
+                Console.WriteLine("Ошибка при регистрации");
                 ShowAccountExistsMessage = true;
+                RegistrationSuccess = false; // Сбрасываем флаг успешной регистрации
             }
         }
     }
