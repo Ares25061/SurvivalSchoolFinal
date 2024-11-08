@@ -1,7 +1,6 @@
 @page "/registration"
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
-@inject IJSRuntime JSRuntime
 
 @using System.Text.Json
 
@@ -61,6 +60,11 @@
                                         <p class="text-danger">Фамилия не введена</p>
                                     }
                                 </div>
+
+                                @if (ShowAccountExistsMessage)
+                                {
+                                    <p class="text-danger">Аккаунт с таким логином или почтой уже существует</p>
+                                }
 
                                 <div class="w-100 d-flex justify-content-center">
                                     <button type="button" class="btn btn-primary btn-lg" @onclick="CheckFields">
@@ -125,7 +129,6 @@
             if (accountExists)
             {
                 ShowAccountExistsMessage = true;
-                await ShowErrorAlert("Аккаунт с таким логином или почтой уже существует");
                 return;
             }
 
@@ -145,16 +148,13 @@
             if (response.IsSuccessStatusCode)
             {
                 RegistrationSuccess = true; // Устанавливаем флаг успешной регистрации
-                await ShowSuccessAlert();
-                await Task.Delay(3000); // Задержка для отображения сообщения
                 NavigationManager.NavigateTo("/login");
             }
             else
             {
                 // Обработка ошибки
                 Console.WriteLine("Ошибка при регистрации");
-                await ShowErrorAlert("Ошибка при регистрации");
-                RegistrationSuccess = false; // Сбрасываем флаг успешной регистрации
+                ShowAccountExistsMessage = true;
             }
         }
     }
@@ -186,15 +186,5 @@
             return result;
         }
         return false;
-    }
-
-    private async Task ShowSuccessAlert()
-    {
-        await JSRuntime.InvokeVoidAsync("Swal.fire", "Успех!", "Вы успешно зарегистрировались", "success");
-    }
-
-    private async Task ShowErrorAlert(string errorMessage)
-    {
-        await JSRuntime.InvokeVoidAsync("Swal.fire", "Ошибка!", errorMessage, "error");
     }
 }
