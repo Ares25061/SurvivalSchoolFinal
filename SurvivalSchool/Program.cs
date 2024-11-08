@@ -14,6 +14,11 @@ using System.Xml.Linq;
 
 namespace SurvivalSchool
 {
+    public class MultipleContacts : OpenApiContact
+    {
+        public List<OpenApiContact> Contacts { get; set; } = new List<OpenApiContact>();
+    }
+
     public class Program
     {
         public static void Main(string[] args)
@@ -40,28 +45,39 @@ namespace SurvivalSchool
 
             // Настройка Swagger
             builder.Services.AddEndpointsApiExplorer();
+
+
+
             builder.Services.AddSwaggerGen(options =>
             {
+                var contacts = new MultipleContacts
+                {
+                    Contacts = new List<OpenApiContact>
+        {
+            new OpenApiContact
+            {
+                Name = "Бекэндер",
+                Url = new Uri("https://t.me/Ares250678"),
+            },
+            new OpenApiContact
+            {
+                Name = "Контакт 2",
+                Url = new Uri("https://t.me/contact2"),
+            },
+            new OpenApiContact
+            {
+                Name = "Контакт 3",
+                Url = new Uri("https://t.me/contact3"),
+            }
+        }
+                };
+
                 options.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Version = "v1",
                     Title = "SurvivalSchollAPI",
                     Description = "Школа выживания",
-                    Contact = new OpenApiContact
-                    {
-                        Name = "Бекэндер",
-                        Url = new Uri("https://t.me/Ares250678"),
-                    },
-                    Extensions = new Dictionary<string, IOpenApiExtension>
-                    {
-                        {
-                            "links", new OpenApiObject
-                            {
-                                { "Фронтендер", new OpenApiString("https://t.me/hukkatir") },
-                                { "Наш сайт", new OpenApiString("https://test-ty0gomtw.b4a.run") }
-                            }
-                        }
-                    }
+                    Contact = contacts
                 });
 
                 // Включение комментариев из XML-файла
