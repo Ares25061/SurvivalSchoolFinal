@@ -14,10 +14,6 @@ using System.Xml.Linq;
 
 namespace SurvivalSchool
 {
-    public class MultipleContacts : OpenApiContact
-    {
-        public List<OpenApiContact> Contacts { get; set; } = new List<OpenApiContact>();
-    }
 
     public class Program
     {
@@ -50,34 +46,21 @@ namespace SurvivalSchool
 
             builder.Services.AddSwaggerGen(options =>
             {
-                var contacts = new MultipleContacts
-                {
-                    Contacts = new List<OpenApiContact>
-        {
-            new OpenApiContact
-            {
-                Name = "Бекэндер",
-                Url = new Uri("https://t.me/Ares250678"),
-            },
-            new OpenApiContact
-            {
-                Name = "Контакт 2",
-                Url = new Uri("https://t.me/contact2"),
-            },
-            new OpenApiContact
-            {
-                Name = "Контакт 3",
-                Url = new Uri("https://t.me/contact3"),
-            }
-        }
-                };
-
                 options.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Version = "v1",
                     Title = "SurvivalSchollAPI",
                     Description = "Школа выживания",
-                    Contact = contacts
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Наш сайт",
+                        Url = new Uri("https://test-ty0gomtw.b4a.run")
+                    },
+                    License = new OpenApiLicense()
+                    {
+                        Name = "Бекендер",
+                        Url = new Uri("https://t.me/Ares250678")
+                    }
                 });
 
                 // Включение комментариев из XML-файла
