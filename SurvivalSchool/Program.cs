@@ -69,15 +69,15 @@ namespace SurvivalSchool
             });
 
             // Настройка CORS
-            //builder.Services.AddCors(options =>
-            //{
-            //    options.AddPolicy("AllowSpecificOrigin", builder =>
-            //    {
-            //        builder.WithOrigins("https://localhost:7207/registration") // Разрешаем запросы с localhost:5104
-            //            .AllowAnyMethod() // Разрешаем любые методы (GET, POST, PUT, DELETE)
-            //            .AllowAnyHeader(); // Разрешаем любые заголовки
-            //    });
-            //});
+            /*builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigin", builder =>
+                {
+                    builder.WithOrigins("https://localhost:7207/registration") // Разрешаем запросы с localhost:5104
+                      .AllowAnyMethod() // Разрешаем любые методы (GET, POST, PUT, DELETE)
+                       .AllowAnyHeader(); // Разрешаем любые заголовки
+               });
+            });*/
 
             var app = builder.Build();
 
