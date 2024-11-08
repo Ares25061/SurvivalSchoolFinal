@@ -95,7 +95,7 @@
     private bool ShowFirstNameMessage { get; set; }
     private bool ShowLastNameMessage { get; set; }
     private bool ShowInvalidEmailMessage { get; set; }
-    private bool ShowAccountExistsMessage { get; set; } // Флаг для сообщения о существующем аккаунте
+    private bool ShowAccountExistsMessage { get; set; }
     private bool RegistrationSuccess { get; set; } // Флаг успешной регистрации
 
     public class User
@@ -110,7 +110,6 @@
         public DateTime? LastLoginDate { get; set; }
         public int RoleId { get; set; }
     }
-
     private async Task CheckFields()
     {
         ShowUsernameMessage = string.IsNullOrEmpty(Username);
@@ -119,46 +118,44 @@
         ShowFirstNameMessage = string.IsNullOrEmpty(FirstName);
         ShowLastNameMessage = string.IsNullOrEmpty(LastName);
         ShowInvalidEmailMessage = !IsValidEmail(Email);
-        ShowAccountExistsMessage = false; // Сбрасываем флаг существующего аккаунта
-
+        ShowAccountExistsMessage = false;
         if (!ShowUsernameMessage && !ShowEmailMessage && !ShowPasswordMessage && !ShowFirstNameMessage && !ShowLastNameMessage
-            && !ShowInvalidEmailMessage)
+        && !ShowInvalidEmailMessage)
         {
-            // Проверка на существование аккаунта
-            bool accountExists = await CheckAccountExists(Username, Email);
-            if (accountExists)
-            {
-                ShowAccountExistsMessage = true;
-                return;
-            }
-
             var user = new User
+                {
+                    Username = Username,
+                    Email = Email,
+                    Pass = Pass,
+                    FirstName = FirstName,
+                    LastName = LastName,
+                    RegistrationDate = DateTime.UtcNow,
+                    RoleId = 1 // Установите значение роли по умолчанию
+                };
+            try
             {
-                Username = Username,
-                Email = Email,
-                Pass = Pass,
-                FirstName = FirstName,
-                LastName = LastName,
-                RegistrationDate = DateTime.UtcNow,
-                RoleId = 1 // Установите значение роли по умолчанию
-            };
+                HttpClient client = new HttpClient();
+                client.BaseAddress = new Uri("https://apisurvival-i6wx8ysg.b4a.run/");
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/User", user);
 
-            HttpResponseMessage response = await HttpClient.PostAsJsonAsync("api/User", user);
+                if (response.IsSuccessStatusCode)
+                {
+                    RegistrationSuccess = true; // Устанавливаем флаг успешной регистрации
+                    await Task.Delay(3000); // Задержка для отображения сообщения
+                    NavigationManager.NavigateTo("/login");
+                }
+                else
+                {
 
-            if (response.IsSuccessStatusCode)
-            {
-                RegistrationSuccess = true; // Устанавливаем флаг успешной регистрации
-                NavigationManager.NavigateTo("/login");
+                    RegistrationSuccess = false; // Сбрасываем флаг успешной регистрации
+                }
             }
-            else
+            catch
             {
-                // Обработка ошибки
-                Console.WriteLine("Ошибка при регистрации");
                 ShowAccountExistsMessage = true;
             }
         }
     }
-
     private bool IsValidEmail(string email)
     {
         if (string.IsNullOrWhiteSpace(email))
@@ -173,18 +170,5 @@
         {
             return false;
         }
-    }
-
-    private async Task<bool> CheckAccountExists(string username, string email)
-    {
-        // Здесь вы должны выполнить запрос к вашему API, чтобы проверить, существует ли уже пользователь с таким логином или почтой
-        // Пример запроса:
-        var response = await HttpClient.GetAsync($"api/User/exists?username={username}&email={email}");
-        if (response.IsSuccessStatusCode)
-        {
-            var result = await response.Content.ReadFromJsonAsync<bool>();
-            return result;
-        }
-        return false;
     }
 }
