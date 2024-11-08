@@ -53,20 +53,17 @@ namespace SurvivalSchool
                         Url = new Uri("https://t.me/Ares250678"),
                     },
                     Extensions = new Dictionary<string, IOpenApiExtension>
-    {
         {
-            "links", new OpenApiObject
             {
+                "links", new OpenApiObject
                 {
-                    "Фронтендер", new OpenApiString("https://t.me/hukkatir")
-                },
-                {
-                    "Наш сайт", new OpenApiString("https://test-ty0gomtw.b4a.run")
+                    { "Фронтендер", new OpenApiString("https://t.me/hukkatir") },
+                    { "Наш сайт", new OpenApiString("https://test-ty0gomtw.b4a.run") }
                 }
             }
         }
-    }
-                });
+                
+                    });
 
                 // Включение комментариев из XML-файла
                 var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
