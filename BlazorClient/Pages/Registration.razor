@@ -16,7 +16,7 @@
                                 <div class="form-group mb-3 text-start">
                                     <label for="username"><b>Логин</b></label>
                                     <input type="text" class="form-control" @bind="Username"
-                                           placeholder="Введите логин">
+                                        placeholder="Введите логин">
                                     @if (ShowUsernameMessage)
                                     {
                                         <p class="text-danger">Логин не введен</p>
@@ -25,7 +25,7 @@
                                 <div class="form-group mb-4 text-start">
                                     <label for="email"><b>Почта</b></label>
                                     <input type="email" class="form-control" @bind="Email"
-                                           placeholder="example@mail.com">
+                                        placeholder="example@mail.com">
                                     @if (ShowEmailMessage)
                                     {
                                         <p class="text-danger">Почта не введена</p>
@@ -38,7 +38,7 @@
                                 <div class="form-group mb-3 text-start">
                                     <label for="password"><b>Пароль</b></label>
                                     <input type="password" class="form-control" @bind="Pass"
-                                           placeholder="Введите пароль">
+                                        placeholder="Введите пароль">
                                     @if (ShowPasswordMessage)
                                     {
                                         <p class="text-danger">Пароль не введен</p>
@@ -67,8 +67,18 @@
                                 }
 
                                 <div class="w-100 d-flex justify-content-center">
-                                    <button type="button" class="btn btn-primary btn-lg" @onclick="CheckFields">
-                                        Зарегистрироваться
+                                    <button type="button" class="btn btn-primary btn-lg" @onclick="CheckFields"
+                                        disabled="@IsLoading">
+                                        @if (IsLoading)
+                                        {
+                                            <span class="spinner-border spinner-border-sm" role="status"
+                                                aria-hidden="true"></span>
+                                            <span>Загрузка...</span>
+                                        }
+                                        else
+                                        {
+                                            <span>Зарегистрироваться</span>
+                                        }
                                     </button>
                                 </div>
                                 <p class="text-center text-muted mt-2 mb-0">
@@ -97,6 +107,7 @@
     private bool ShowInvalidEmailMessage { get; set; }
     private bool ShowAccountExistsMessage { get; set; } = false;
     private bool RegistrationSuccess { get; set; } // Флаг успешной регистрации
+    private bool IsLoading { get; set; } // Флаг состояния загрузки
 
     public class User
     {
@@ -110,6 +121,7 @@
         public DateTime? LastLoginDate { get; set; }
         public int RoleId { get; set; }
     }
+
     private async Task CheckFields()
     {
         ShowUsernameMessage = string.IsNullOrEmpty(Username);
@@ -118,9 +130,12 @@
         ShowFirstNameMessage = string.IsNullOrEmpty(FirstName);
         ShowLastNameMessage = string.IsNullOrEmpty(LastName);
         ShowInvalidEmailMessage = !IsValidEmail(Email);
+
         if (!ShowUsernameMessage && !ShowEmailMessage && !ShowPasswordMessage && !ShowFirstNameMessage && !ShowLastNameMessage
         && !ShowInvalidEmailMessage)
         {
+            IsLoading = true; // Устанавливаем флаг загрузки
+
             var user = new User
                 {
                     Username = Username,
@@ -131,6 +146,7 @@
                     RegistrationDate = DateTime.UtcNow,
                     RoleId = 1 // Установите значение роли по умолчанию
                 };
+
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri("https://apisurvival-i6wx8ysg.b4a.run/");
             HttpResponseMessage response = await client.PostAsJsonAsync("api/User", user);
@@ -148,8 +164,11 @@
                 ShowAccountExistsMessage = true;
                 RegistrationSuccess = false; // Сбрасываем флаг успешной регистрации
             }
+
+            IsLoading = false; // Сбрасываем флаг загрузки
         }
     }
+
     private bool IsValidEmail(string email)
     {
         if (string.IsNullOrWhiteSpace(email))
