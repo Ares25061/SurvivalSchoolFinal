@@ -1,0 +1,103 @@
+@page "/articles"
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+@inject BlazorUser BlazorUser
+@inject BlazorUser User
+@inject HttpClient HttpClient
+@using System.Text.Json
+
+<nav class="py-3 navbar navbar-expand-lg fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="#">Школа выживания</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Главная</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/articles">Статьи</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Форум</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/registration">Зарегистрироваться</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="my-5 container main-content pt-5">
+    <div class="row ">
+        <div class="col-md-12">
+            @if (Lectures == null)
+            {
+                <p>Загрузка...</p>
+            }
+            else
+            {
+                <div class="row row-cols-1 row-cols-md-3 g-3">
+                    @foreach (var lecture in Lectures)
+                    {
+                        <div class="col">
+                            <div class="card h-100">
+                                <div class="card-body d-flex flex-column justify-content-between">
+                                    <h5 class="card-title">@lecture.Title</h5>
+                                    <p class="card-text flex-grow-1">@(lecture.Content.Length > 250 ?
+                                lecture.Content.Substring(0, 250) + "..." : lecture.Content)</p>
+                                    <p class="card-text text-muted">@lecture.CreatedDate.ToShortDateString()</p>
+                                    <p class="card-text text-muted">Автор: @lecture.CreatedBy</p>
+                                    <!-- Надо сделать так чтобы показывался не id а никнейм автора статьи -->
+                                    <a href="#" class="btn btn-primary mt-auto">Читать далее</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<!-- возможно когда-нибудь сделаем сортировку по категории.... -->
+
+@*   <aside class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    Категории
+                </div>
+                <ul class="list-group list-group-flush">
+                    @foreach (var category in Categories)
+                    {
+                        <li class="list-group-item"><a href="#">@category.CategoryName</a></li>
+                    }
+                </ul>
+            </div>
+    </aside> *@
+
+
+@code {
+    private List<GetLectureResponse> Lectures;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        HttpClient client = new HttpClient();
+        client.BaseAddress = new Uri("https://apisurvival-i6wx8ysg.b4a.run");
+        Lectures = await client.GetFromJsonAsync<List<GetLectureResponse>>("api/Lecture");
+
+    }
+
+    public class GetLectureResponse
+    {
+        public int LectureID { get; set; }
+        public string Title { get; set; }
+        public string Content { get; set; }
+        public int CreatedBy { get; set; } // Надо сделать так чтобы показывался не id а никнейм автора статьи
+        public DateTime CreatedDate { get; set; }
+    }
+}

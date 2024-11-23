@@ -104,7 +104,7 @@ button {
     display: inline-block;
     max-width: 50%;
     height: 50px;
-    border-radius: 15px !important;
+    border-radius: 15px ;
     margin-top: 15px;
     background-color: #ffc801;
     border-color: #ffc801;
@@ -113,7 +113,32 @@ button {
     font-size: large;
     border-width: 2px;
 }
+.custom-button {
+    display: inline-block;
+    max-width: 50%;
+    height: 50px;
+    border-radius: 10px;
+    margin-top: 15px;
+    background-color: #ffc801;
+    border-color: #ffc801d7;
+    color: #1b2e35;
+    font-weight: bold;
+    font-size: large;
+    border-width: 2px;
+}
+.btn-primary {
+    background-color: #ffc801; /* Желтый цвет фона */
+    border-color: #ffc801; /* Желтый цвет границы */
+    color: #1b2e35; /* Темный цвет текста */
+    font-weight: bold; /* Жирный текст */
+}
 
+.btn-primary:hover {
+    background-color: #976a00; /* Желтый цвет фона при наведении */
+    border-color: #976a00; /* Желтый цвет границы при наведении */
+    color: #1b2e35;
+    font-weight: bold; /* Жирный текст при наведении */
+}
 #hero .col {
     justify-content: center;
     flex-direction: column;
