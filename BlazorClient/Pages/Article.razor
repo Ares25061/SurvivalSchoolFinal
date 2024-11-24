@@ -1,0 +1,30 @@
+@page "/article/{id:int}"
+@inject HttpClient HttpClient
+
+<h2>@Lecture?.Title</h2>
+<p>@Lecture?.Content</p>
+<p>Автор: @Lecture?.CreatedBy</p>
+<p>Дата создания: @Lecture?.CreatedDate.ToShortDateString()</p>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private GetLectureResponse Lecture;
+
+    protected override async Task OnInitializedAsync()
+    {
+        HttpClient client = new HttpClient();
+        client.BaseAddress = new Uri("https://apisurvival-i6wx8ysg.b4a.run");
+        Lecture = await client.GetFromJsonAsync<GetLectureResponse>($"api/Lecture/{Id}");
+    }
+
+    public class GetLectureResponse
+    {
+        public int LectureID { get; set; }
+        public string Title { get; set; }
+        public string Content { get; set; }
+        public int CreatedBy { get; set; } // Надо сделать так чтобы показывался не id а никнейм автора статьи
+        public DateTime CreatedDate { get; set; }
+    }
+}
