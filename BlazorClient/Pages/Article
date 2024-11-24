@@ -1,0 +1,60 @@
+@page "/article/{id:int}"
+@inject HttpClient HttpClient
+
+<div class="container">
+    @if (IsLoading)
+    {
+        <div class="text-center">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <span>Загрузка...</span>
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @ErrorMessage
+        </div>
+    }
+    else
+    {
+        <h1>@Lecture.Title</h1>
+        <p>@Lecture.Content</p>
+        <p class="text-muted">Дата создания: @Lecture.CreatedDate.ToShortDateString()</p>
+        <!-- Здесь можно добавить другие детали статьи, например, автора -->
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private GetLectureResponse Lecture;
+    private bool IsLoading;
+    private string ErrorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            Lecture = await HttpClient.GetFromJsonAsync<GetLectureResponse>($"api/Lecture/{Id}");
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Произошла ошибка при загрузке статьи: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    public class GetLectureResponse
+    {
+        public int LectureId { get; set; }
+        public string Title { get; set; }
+        public string Content { get; set; }
+        public int CreatedBy { get; set; }
+        public DateTime CreatedDate { get; set; }
+    }
+}
