@@ -1,10 +1,20 @@
-@page "/article/{id:int}"
+@page "/article/{Id:int}"
+<!-- возможно Надо будет обратно поменять Id на id.... -->
 @inject HttpClient HttpClient
+@using System.Net.Http;
+@using System.Net.Http.Json;
+@using System.Threading.Tasks;
 
-<h2>@Lecture?.Title</h2>
-<p>@Lecture?.Content</p>
-<p>Автор: @Lecture?.CreatedBy</p>
-<p>Дата создания: @Lecture?.CreatedDate.ToShortDateString()</p>
+@if (Lecture == null)
+{
+    <p>Загрузка...</p>
+}
+else
+{
+    <h3>@Lecture.Title</h3>
+    <p>@Lecture.Content</p>
+    <p>@Lecture.CreatedDate.ToShortDateString()</p>
+}
 
 @code {
     [Parameter]
@@ -14,9 +24,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        HttpClient client = new HttpClient();
+        @* HttpClient client = new HttpClient();
         client.BaseAddress = new Uri("https://apisurvival-i6wx8ysg.b4a.run");
-        Lecture = await client.GetFromJsonAsync<GetLectureResponse>($"api/Lecture/{Id}");
+        Lecture = await client.GetFromJsonAsync<GetLectureResponse>($"api/Lecture/{Id}"); *@
+
+        Lecture = await HttpClient.GetFromJsonAsync<GetLectureResponse>($"api/Lecture/{Id}");
     }
 
     public class GetLectureResponse
