@@ -2,7 +2,6 @@
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
 @inject BlazorUser BlazorUser
-@inject BlazorUser User
 @inject HttpClient HttpClient
 @using System.Text.Json
 
@@ -10,7 +9,7 @@
     <div class="container">
         <a class="navbar-brand" href="#">Школа выживания</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -22,7 +21,7 @@
                     <a class="nav-link active" aria-current="page" href="/articles">Статьи</a>
                 </li>
                 @*   <li class="nav-item">
-                    <a class="nav-link" href="#">Форум</a>
+                <a class="nav-link" href="#">Форум</a>
                 </li> *@
                 @if (BlazorUser.User != null)
                 {
@@ -58,11 +57,12 @@
                             <div class="card h-100">
                                 <div class="card-body d-flex flex-column justify-content-between">
                                     <h5 class="card-title">@lecture.Title</h5>
-                                    <p class="card-text flex-grow-1">@(lecture.Content.Length > 250 ?
-                                lecture.Content.Substring(0, 250) + "..." : lecture.Content)</p>
+                                    <p class="card-text flex-grow-1">
+                                        @(lecture.Content.Length > 250 ?
+                                            lecture.Content.Substring(0, 250) + "..." : lecture.Content)
+                                    </p>
                                     <p class="card-text text-muted">@lecture.CreatedDate.ToShortDateString()</p>
-                                    @* <p class="card-text text-muted">Автор: @lecture.CreatedBy</p> *@
-                                    <!-- Надо сделать так чтобы показывался не id а никнейм автора статьи -->
+                                    <p class="card-text text-muted">Автор: @lecture.Author</p>
                                     <a href="@($"/article/{lecture.LectureID}")" class="btn btn-primary mt-auto">Читать далее</a>
                                 </div>
                             </div>
@@ -74,40 +74,48 @@
     </div>
 </div>
 
-<!-- возможно когда-нибудь сделаем сортировку по категории.... -->
-
-@*   <aside class="col-md-4">
-            <div class="card mb-4">
-                <div class="card-header">
-                    Категории
-                </div>
-                <ul class="list-group list-group-flush">
-                    @foreach (var category in Categories)
-                    {
-                        <li class="list-group-item"><a href="#">@category.CategoryName</a></li>
-                    }
-                </ul>
-            </div>
-    </aside> *@
-
-
 @code {
     private List<GetLectureResponse> Lectures;
 
     protected override async Task OnInitializedAsync()
     {
-
         HttpClient client = new HttpClient();
         client.BaseAddress = new Uri("https://apisurvival-i6wx8ysg.b4a.run");
+
+        // Получаем список лекций
         Lectures = await client.GetFromJsonAsync<List<GetLectureResponse>>("api/Lecture");
 
+        // Получаем информацию о пользователях для каждой лекции
+        foreach (var lecture in Lectures)
+        {
+            var user = await client.GetFromJsonAsync<User>($"/api/User/{lecture.CreatedBy}") ?? new User { Username = "Name not found" };
+            lecture.Author = user.Username;
+        }
     }
+
     public class GetLectureResponse
     {
         public int LectureID { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
-        public int CreatedBy { get; set; } // Надо сделать так чтобы показывался не id а никнейм автора статьи
+        public int CreatedBy { get; set; }
         public DateTime CreatedDate { get; set; }
+        public string Author { get; set; } // Добавляем свойство для имени автора
     }
+
+
+    public class User
+    {
+        public int UserId { get; set; }
+        public string Username { get; set; } = null!;
+        public string Email { get; set; } = null!;
+        public string Pass { get; set; } = null!;
+        public string FirstName { get; set; } = null!;
+        public string LastName { get; set; } = null!;
+        public DateTime RegistrationDate { get; set; }
+        public DateTime? LastLoginDate { get; set; }
+        public int RoleId { get; set; }
+    }
+
+
 }
