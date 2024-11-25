@@ -1,18 +1,38 @@
 ﻿@page "/article/{id:int}"
 @inject HttpClient HttpClient
 
-<h3>Статья</h3>
-
 @if (Lecture == null)
 {
-    <p>Загрузка...</p>
+    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+        </div>
+    </div>
 }
 else
 {
-    <h3>@Lecture.Title</h3>
-    <p>@Lecture.Content</p>
-    <p>Дата создания: @Lecture.CreatedDate.ToShortDateString()</p>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="title " style="color: #1b2e35; font-weight: bold; text-align: center;">
+                            @Lecture.Title
+                        </h3>
+                        <div class="article-content"
+                            style="white-space: pre-wrap; word-wrap: break-word; line-height: 1.6; font-size: 1.1rem; padding: 20px; border-radius: 5px;">
+                            @Lecture.Content
+                            <p class="text-muted">
+                                @Lecture.CreatedDate.ToShortDateString()
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 }
+
 
 @code {
     [Parameter]
@@ -27,20 +47,6 @@ else
         Lecture = await client.GetFromJsonAsync<GetLectureResponse>($"api/Lecture/{Id}");
     }
 
-
-    private async Task<string> GetAuthorName(int userId)
-    {
-        // Здесь вам нужно сделать запрос на получение имени пользователя по его ID.
-        // Пример (адаптируйте под вашу API):
-        var author = await HttpClient.GetFromJsonAsync<AuthorResponse>($"api/User/{userId}");
-        return author?.UserName ?? "Неизвестный автор";
-    }
-
-    public class AuthorResponse
-    {
-        public string UserName { get; set; }
-    }
-
     public class GetLectureResponse
     {
         public int LectureID { get; set; }
@@ -49,5 +55,4 @@ else
         public int CreatedBy { get; set; } // Надо сделать так чтобы показывался не id а никнейм автора статьи
         public DateTime CreatedDate { get; set; }
     }
-
 }

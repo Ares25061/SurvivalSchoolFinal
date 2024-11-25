@@ -5,9 +5,36 @@
 @inject BlazorUser BlazorUser
 @using System.Text.Json
 
+
 <nav class="py-3 navbar navbar-expand-lg fixed-top auto-hiding-navbar">
     <div class="container">
         <a class="navbar-brand" href="/">Школа выживания</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Главная</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/articles">Статьи</a>
+                </li>
+                @if (BlazorUser.User != null)
+                {
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/profile">Личный кабинет</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="/registration">Зарегистрироваться</a>
+                    </li>
+                }
+            </ul>
+        </div>
     </div>
 </nav>
 
