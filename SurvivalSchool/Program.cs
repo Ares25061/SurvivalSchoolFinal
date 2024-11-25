@@ -54,7 +54,7 @@ namespace SurvivalSchool
                     Contact = new OpenApiContact
                     {
                         Name = "Наш сайт",
-                        Url = new Uri("https://test-ty0gomtw.b4a.run")
+                        Url = new Uri("https://survivalschoolfinalsite.onrender.com/")
                     },
                     License = new OpenApiLicense()
                     {
@@ -121,7 +121,7 @@ namespace SurvivalSchool
                 app.UseSwaggerUI();
             }
 
-            app.UseCors(builder => builder.WithOrigins(new[] { "https://apisurvival-i6wx8ysg.b4a.run/", })
+            app.UseCors(builder => builder.WithOrigins(new[] { "https://survivalschoolfinalapi.onrender.com/", })
            .AllowAnyHeader()
            .AllowAnyMethod()
            .AllowAnyOrigin());
