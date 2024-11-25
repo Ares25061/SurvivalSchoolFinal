@@ -4,7 +4,6 @@
 @inject BlazorUser BlazorUser
 @inject BlazorUser User
 @inject HttpClient HttpClient
-@using System.Net.Http.Json;
 @using System.Text.Json
 
 <nav class="py-3 navbar navbar-expand-lg fixed-top">
@@ -55,7 +54,7 @@
                                     <p class="card-text text-muted">@lecture.CreatedDate.ToShortDateString()</p>
                                     @* <p class="card-text text-muted">Автор: @lecture.CreatedBy</p> *@
                                     <!-- Надо сделать так чтобы показывался не id а никнейм автора статьи -->
-                                    <a href="/article/@lecture.LectureID" class="btn btn-primary mt-auto">Читать далее</a>
+                                    <a href="@($"/article/{lecture.LectureID}")" class="btn btn-primary mt-auto">Читать далее</a>
                                 </div>
                             </div>
                         </div>
@@ -94,7 +93,6 @@
         Lectures = await client.GetFromJsonAsync<List<GetLectureResponse>>("api/Lecture");
 
     }
-
     public class GetLectureResponse
     {
         public int LectureID { get; set; }
