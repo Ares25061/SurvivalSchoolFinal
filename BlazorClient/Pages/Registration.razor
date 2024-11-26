@@ -199,14 +199,17 @@
 
     private string FormatName(string name)
     {
-        name = Regex.Replace(name, @"[^а-яёА-ЯЁ\-]", "");
+        // Удаляем все символы, кроме русских и английских букв, а также дефиса
+        name = Regex.Replace(name, @"[^а-яА-ЯёЁa-zA-Z\-]", "");
+
         if (string.IsNullOrEmpty(name))
         {
             return null;
         }
         else
         {
-            if (Regex.IsMatch(name, @"^[а-яёА-ЯЁ]+(-[а-яёА-ЯЁ]+)?$"))
+            // Проверяем, что имя или фамилия соответствует формату
+            if (Regex.IsMatch(name, @"^[а-яА-ЯёЁa-zA-Z]+(-[а-яА-ЯёЁa-zA-Z]+)?$"))
             {
                 name = name.ToLower();
                 string[] words = name.Split('-');
