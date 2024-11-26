@@ -1,10 +1,8 @@
 @page "/profile"
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
-@inject BlazorUser User
 @inject BlazorUser BlazorUser
 @using System.Text.Json
-
 
 <nav class="py-3 navbar navbar-expand-lg fixed-top auto-hiding-navbar">
     <div class="container">
@@ -68,6 +66,9 @@
                                     <label for="registrationDate"><b>Дата регистрации</b></label>
                                     <p>@BlazorUser.User.RegistrationDate.ToString("dd.MM.yyyy")</p>
                                 </div>
+                                <div class="form-group mb-3 text-center">
+                                    <button class="btn btn-danger" @onclick="Logout">Выход из аккаунта</button>
+                                </div>
                             }
                             else
                             {
@@ -126,21 +127,15 @@
         }
     }
 
-    public User[] result = new User[] { };
-
-    string CurrentDate;
-    string CurrentTime;
-
-    protected override async Task OnInitializedAsync()
+    private async Task Logout()
     {
-        var date = DateTime.Now;
-        CurrentTime = date.ToShortTimeString();
-        CurrentDate = date.ToShortDateString();
-        //user = BlazorUser.User;
-        //var client = new HttpClient();
-        //client.BaseAddress = new Uri("https://bankprikoloff.onrender.com/");
-        //result = await client.GetFromJsonAsync<User[]>("api/User");
+        // Очистка данных пользователя
+        BlazorUser.User = null;
 
-        return;
+        // Очистка localStorage (если используется)
+        await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "user");
+
+        // Перенаправление на главную страницу
+        NavigationManager.NavigateTo("/");
     }
 }

@@ -132,7 +132,13 @@ button {
     color: #1b2e35; /* Темный цвет текста */
     font-weight: bold; /* Жирный текст */
 }
-
+.btn-art {
+    background-color: white; /* Желтый цвет фона */
+    border-color: #ffc801; /* Желтый цвет границы */
+    color: #1b2e35; /* Темный цвет текста */
+    font-weight: bold; /* Жирный текст */
+    border-width: 2px;
+}
 .btn-primary:hover {
     background-color: #976a00; /* Желтый цвет фона при наведении */
     border-color: #976a00; /* Желтый цвет границы при наведении */
