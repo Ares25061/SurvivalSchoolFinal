@@ -3,6 +3,7 @@
 @inject NavigationManager NavigationManager
 
 @using System.Text.Json
+@using System.Text.RegularExpressions
 
 <section class="bg-green ">
     <div class="mask d-flex align-items-center gradient-custom-3 vh-100 vh-100 main-content">
@@ -16,40 +17,42 @@
                                 <div class="form-group mb-3 text-start">
                                     <label for="username"><b>Логин</b></label>
                                     <input type="text" class="form-control" @bind="Username"
-                                        placeholder="Введите логин">
+                                           placeholder="Введите логин">
                                     @if (ShowUsernameMessage)
                                     {
-                                        <p class="text-danger">Логин не введен</p>
+                                        <p class="text-danger">Логин должен содержать не менее 5 символов и хотя бы 3 английские буквы</p>
                                     }
+                                    <div class="alert alert-info mt-2" role="alert">
+                                        Логин должен содержать не менее 5 символов и хотя бы 3 английские буквы.
+                                    </div>
                                 </div>
                                 <div class="form-group mb-4 text-start">
                                     <label for="email"><b>Почта</b></label>
                                     <input type="email" class="form-control" @bind="Email"
-                                        placeholder="example@mail.com">
+                                           placeholder="example@mail.com">
                                     @if (ShowEmailMessage)
                                     {
-                                        <p class="text-danger">Почта не введена</p>
-                                    }
-                                    @if (ShowInvalidEmailMessage && !ShowEmailMessage)
-                                    {
-                                        <p class="text-danger">Неверный формат email</p>
+                                        <p class="text-danger">Почта не введена или не соответствует требованиям</p>
                                     }
                                 </div>
                                 <div class="form-group mb-3 text-start">
                                     <label for="password"><b>Пароль</b></label>
                                     <input type="password" class="form-control" @bind="Pass"
-                                        placeholder="Введите пароль">
+                                           placeholder="Введите пароль">
                                     @if (ShowPasswordMessage)
                                     {
-                                        <p class="text-danger">Пароль не введен</p>
+                                        <p class="text-danger">Пароль не введен или не соответствует требованиям</p>
                                     }
+                                    <div class="alert alert-info mt-2" role="alert">
+                                        Пароль должен быть минимум 8 символов, содержать 2 английские буквы разного регистра и хотя бы одну цифру.
+                                    </div>
                                 </div>
                                 <div class="form-group mb-3 text-start">
                                     <label for="firstName"><b>Имя</b></label>
                                     <input type="text" class="form-control" placeholder="Иван" @bind="FirstName">
                                     @if (ShowFirstNameMessage)
                                     {
-                                        <p class="text-danger">Имя не введено</p>
+                                        <p class="text-danger">Имя не введено или не соответствует формату</p>
                                     }
                                 </div>
                                 <div class="form-group mb-3 text-start">
@@ -57,7 +60,7 @@
                                     <input type="text" class="form-control" @bind="LastName" placeholder="Иванов">
                                     @if (ShowLastNameMessage)
                                     {
-                                        <p class="text-danger">Фамилия не введена</p>
+                                        <p class="text-danger">Фамилия не введена или не соответствует формату</p>
                                     }
                                 </div>
 
@@ -68,11 +71,11 @@
 
                                 <div class="w-100 d-flex justify-content-center">
                                     <button type="button" class="btn btn-primary mt-auto" @onclick="CheckFields"
-                                        disabled="@IsLoading">
+                                            disabled="@IsLoading">
                                         @if (IsLoading)
                                         {
                                             <span class="spinner-border spinner-border-sm" role="status"
-                                                aria-hidden="true"></span>
+                                                  aria-hidden="true"></span>
                                             <span>Загрузка...</span>
                                         }
                                         else
@@ -104,7 +107,6 @@
     private bool ShowPasswordMessage { get; set; }
     private bool ShowFirstNameMessage { get; set; }
     private bool ShowLastNameMessage { get; set; }
-    private bool ShowInvalidEmailMessage { get; set; }
     private bool ShowAccountExistsMessage { get; set; } = false;
     private bool RegistrationSuccess { get; set; } // Флаг успешной регистрации
     private bool IsLoading { get; set; } // Флаг состояния загрузки
@@ -124,15 +126,13 @@
 
     private async Task CheckFields()
     {
-        ShowUsernameMessage = string.IsNullOrEmpty(Username);
-        ShowEmailMessage = string.IsNullOrEmpty(Email);
-        ShowPasswordMessage = string.IsNullOrWhiteSpace(Pass);
-        ShowFirstNameMessage = string.IsNullOrEmpty(FirstName);
-        ShowLastNameMessage = string.IsNullOrEmpty(LastName);
-        ShowInvalidEmailMessage = !IsValidEmail(Email);
+        ShowUsernameMessage = string.IsNullOrEmpty(Username) || !IsValidUsername(Username);
+        ShowEmailMessage = string.IsNullOrEmpty(Email) || !IsValidEmail(Email);
+        ShowPasswordMessage = string.IsNullOrWhiteSpace(Pass) || !IsValidPassword(Pass);
+        ShowFirstNameMessage = string.IsNullOrEmpty(FirstName) || FormatName(FirstName) == null;
+        ShowLastNameMessage = string.IsNullOrEmpty(LastName) || FormatName(LastName) == null;
 
-        if (!ShowUsernameMessage && !ShowEmailMessage && !ShowPasswordMessage && !ShowFirstNameMessage && !ShowLastNameMessage
-        && !ShowInvalidEmailMessage)
+        if (!ShowUsernameMessage && !ShowEmailMessage && !ShowPasswordMessage && !ShowFirstNameMessage && !ShowLastNameMessage)
         {
             IsLoading = true; // Устанавливаем флаг загрузки
 
@@ -141,8 +141,8 @@
                     Username = Username,
                     Email = Email,
                     Pass = Pass,
-                    FirstName = FirstName,
-                    LastName = LastName,
+                    FirstName = FormatName(FirstName),
+                    LastName = FormatName(LastName),
                     RegistrationDate = DateTime.UtcNow,
                     RoleId = 1 // Установите значение роли по умолчанию
                 };
@@ -169,19 +169,60 @@
         }
     }
 
+    private bool IsValidUsername(string username)
+    {
+        if (string.IsNullOrWhiteSpace(username) || username.Length < 5)
+            return false;
+        // Логин должен содержать хотя бы 3 английские буквы
+        return username.Count(char.IsLetter) >= 3;
+    }
+
     private bool IsValidEmail(string email)
     {
         if (string.IsNullOrWhiteSpace(email))
             return false;
-        try
-        {
-            // Проверка на соответствие формату email
-            var addr = new System.Net.Mail.MailAddress(email);
-            return addr.Address == email;
-        }
-        catch
-        {
+        // Проверка на соответствие формату email
+        string pattern = @"^[a-zA-Z0-9\.]+@[a-zA-Z]+\.[a-zA-Z]{2,3}$";
+        return Regex.IsMatch(email, pattern);
+    }
+
+    private bool IsValidPassword(string password)
+    {
+        if (string.IsNullOrWhiteSpace(password))
             return false;
+        // Пароль должен быть минимум 8 символов, содержать 2 английские буквы разного регистра и хотя бы одну цифру
+        return password.Length >= 8 &&
+               password.Any(char.IsLower) &&
+               password.Any(char.IsUpper) &&
+               password.Any(char.IsDigit);
+    }
+
+    private string FormatName(string name)
+    {
+        name = Regex.Replace(name, @"[^а-яёА-ЯЁ\-]", "");
+        if (string.IsNullOrEmpty(name))
+        {
+            return null;
+        }
+        else
+        {
+            if (Regex.IsMatch(name, @"^[а-яёА-ЯЁ]+(-[а-яёА-ЯЁ]+)?$"))
+            {
+                name = name.ToLower();
+                string[] words = name.Split('-');
+                for (int i = 0; i < words.Length; i++)
+                {
+                    if (words[i].Length > 0)
+                    {
+                        words[i] = char.ToUpper(words[i][0]) + words[i].Substring(1);
+                    }
+                }
+                return string.Join("-", words);
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }
