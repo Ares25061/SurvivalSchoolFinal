@@ -16,12 +16,12 @@
                             <h2 class="text-center mb-1">Вход</h2>
                             <form>
                                 <div class="form-group mb-3 text-start">
-                                    <label for="username"><b>Имя пользователя</b></label>
-                                    <input type="text" class="form-control" @bind="Username"
-                                           placeholder="Введите имя пользователя">
-                                    @if (ShowUsernameMessage)
+                                    <label for="loginOrEmail"><b>Имя пользователя или Email</b></label>
+                                    <input type="text" class="form-control" @bind="LoginOrEmail"
+                                           placeholder="Введите имя пользователя или Email">
+                                    @if (ShowLoginOrEmailMessage)
                                     {
-                                        <p class="text-danger">Имя пользователя не введено</p>
+                                        <p class="text-danger">Имя пользователя или Email не введен</p>
                                     }
                                 </div>
                                 <div class="form-group mb-3 text-start">
@@ -69,12 +69,12 @@
 
 @code {
     User user;
-    private bool ShowUsernameMessage { get; set; }
+    private bool ShowLoginOrEmailMessage { get; set; }
     private bool ShowPasswordMessage { get; set; }
     private bool LoginUnSuccess { get; set; }
     private bool IsLoading { get; set; }
     private bool ShowPassword { get; set; }
-    public string Username = "";
+    public string LoginOrEmail = "";
     public string Pass = "";
 
     protected override void OnInitialized()
@@ -84,10 +84,10 @@
 
     private async Task CheckFields()
     {
-        ShowUsernameMessage = string.IsNullOrEmpty(Username);
+        ShowLoginOrEmailMessage = string.IsNullOrEmpty(LoginOrEmail);
         ShowPasswordMessage = string.IsNullOrEmpty(Pass);
 
-        if (!ShowUsernameMessage && !ShowPasswordMessage)
+        if (!ShowLoginOrEmailMessage && !ShowPasswordMessage)
         {
             IsLoading = true;
             await UserEnter();
@@ -100,12 +100,12 @@
         HttpClient client = new HttpClient();
         client.BaseAddress = new Uri("https://apisurvival-i6wx8ysg.b4a.run");
 
-        if (string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(Pass))
+        if (string.IsNullOrEmpty(LoginOrEmail) || string.IsNullOrEmpty(Pass))
         {
-            throw new ArgumentException("Username or password is empty");
+            throw new ArgumentException("Login or password is empty");
         }
 
-        HttpResponseMessage response = await client.GetAsync($"api/User/{Username}/{Pass}");
+        HttpResponseMessage response = await client.GetAsync($"api/User/{LoginOrEmail}/{Pass}");
 
         if (response.IsSuccessStatusCode)
         {
