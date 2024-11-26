@@ -44,15 +44,15 @@ namespace SurvivalSchool.Controllers
         }
 
         /// <summary>
-        /// Получение пользователя по логину и паролю
+        /// Получение пользователя по логину или почте и паролю
         /// </summary>
-        /// <param name="login">Login</param>
-        /// <param name="password">Password</param>
+        /// <param name="loginOrEmail">Логин или Email</param>
+        /// <param name="password">Пароль</param>
         // GET api/<UserController>
-        [HttpGet("{login}/{password}")]
-        public async Task<IActionResult> GetByLogin(string login, string password)
+        [HttpGet("{loginOrEmail}/{password}")]
+        public async Task<IActionResult> GetByLogin(string loginOrEmail, string password)
         {
-            var Dto = await _userService.GetByLogin(login, password);
+            var Dto = await _userService.GetByLogin(loginOrEmail, password);
             return Ok(Dto.Adapt<GetUserResponse>());
         }
         /// <summary>
