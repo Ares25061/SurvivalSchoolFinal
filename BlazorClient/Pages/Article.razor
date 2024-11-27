@@ -84,7 +84,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         HttpClient client = new HttpClient();
-        client.BaseAddress = new Uri("https://apisurvival-i6wx8ysg.b4a.run");
+        client.BaseAddress = new Uri("https://survivalschoolfinalapi.onrender.com/");
         Lecture = await client.GetFromJsonAsync<GetLectureResponse>($"api/Lecture/{Id}");
     }
 
