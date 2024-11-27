@@ -56,7 +56,6 @@ namespace SurvivalSchool.Controllers
         ///        "CategoryId": 1,
         ///        "CreatedBy": 1,
         ///        "PhotoURL": "string",
-        ///        "IsApproved": 1
         ///     }
         ///
         /// </remarks>

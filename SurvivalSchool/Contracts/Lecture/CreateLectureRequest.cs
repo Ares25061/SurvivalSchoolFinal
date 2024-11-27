@@ -7,6 +7,5 @@
         public int CategoryId { get; set; }
         public int CreatedBy { get; set; }
         public string? PhotoUrl { get; set; }
-        public bool IsApproved { get; set; }
     }
 }
