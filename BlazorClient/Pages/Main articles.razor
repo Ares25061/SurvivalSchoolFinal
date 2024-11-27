@@ -88,8 +88,16 @@
         // Получаем информацию о пользователях для каждой лекции
         foreach (var lecture in Lectures)
         {
-            var user = await client.GetFromJsonAsync<User>($"/api/User/{lecture.CreatedBy}") ?? new User { Username = "Name not found" };
-            lecture.Author = user.Username;
+            try
+            {
+                var user = await client.GetFromJsonAsync<User>($"/api/User/{lecture.CreatedBy}");
+                lecture.Author = user?.Username ?? "Неизвестный пользователь";
+            }
+            catch (HttpRequestException)
+            {
+                // Если пользователь не найден, устанавливаем "Неизвестный пользователь"
+                lecture.Author = "Неизвестный пользователь";
+            }
         }
     }
 
@@ -103,7 +111,6 @@
         public string Author { get; set; } // Добавляем свойство для имени автора
     }
 
-
     public class User
     {
         public int UserId { get; set; }
@@ -116,6 +123,4 @@
         public DateTime? LastLoginDate { get; set; }
         public int RoleId { get; set; }
     }
-
-
 }
