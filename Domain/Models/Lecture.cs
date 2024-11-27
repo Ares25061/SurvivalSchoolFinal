@@ -12,6 +12,8 @@ namespace Domain.Models
         public int CreatedBy { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
+        public string? PhotoUrl { get; set; }
+        public bool IsApproved { get; set; }
 
         public virtual Category Category { get; set; } = null!;
         public virtual User CreatedByNavigation { get; set; } = null!;

@@ -9,5 +9,7 @@
         public int CreatedBy { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
+        public string? PhotoUrl { get; set; }
+        public bool IsApproved { get; set; }
     }
 }

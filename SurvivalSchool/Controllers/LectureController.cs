@@ -54,7 +54,9 @@ namespace SurvivalSchool.Controllers
         ///        "Title" : "string",
         ///        "Content" : "string",
         ///        "CategoryId": 1,
-        ///        "CreatedBy": 1
+        ///        "CreatedBy": 1,
+        ///        "PhotoURL": "string",
+        ///        "IsApproved": 1
         ///     }
         ///
         /// </remarks>
@@ -84,7 +86,9 @@ namespace SurvivalSchool.Controllers
         ///       "CategoryId": 1,
         ///       "CreatedBy": 1,
         ///       "CreatedDate": "2024-09-19T14:05:14.947Z",
-        ///       "UpdatedDate": "2024-09-19T14:05:14.947Z"
+        ///       "UpdatedDate": "2024-09-19T14:05:14.947Z",
+        ///       "PhotoURL": "string",
+        ///       "IsApproved": 1
         ///     }
         ///
         /// </remarks>

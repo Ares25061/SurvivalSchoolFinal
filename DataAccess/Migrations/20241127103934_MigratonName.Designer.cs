@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(SurvivalSchool1Context))]
-    [Migration("20241102171142_MigratonName")]
+    [Migration("20241127103934_MigratonName")]
     partial class MigratonName
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -147,6 +147,14 @@ namespace DataAccess.Migrations
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PhotoUrl")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("PhotoURL");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -254,7 +262,9 @@ namespace DataAccess.Migrations
                         .HasColumnName("TestID");
 
                     b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("(getdate())");
 
                     b.HasKey("QuestionId")
                         .HasName("PK__TestQues__0DC06F8C825C0CDC");
@@ -302,8 +312,10 @@ namespace DataAccess.Migrations
                         .HasDefaultValueSql("(getdate())");
 
                     b.Property<int>("RoleId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("RoleID");
+                        .HasColumnName("RoleID")
+                        .HasDefaultValueSql("((1))");
 
                     b.Property<string>("Username")
                         .IsRequired()

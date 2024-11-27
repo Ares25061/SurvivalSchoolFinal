@@ -6,5 +6,7 @@
         public string Content { get; set; } = null!;
         public int CategoryId { get; set; }
         public int CreatedBy { get; set; }
+        public string? PhotoUrl { get; set; }
+        public bool IsApproved { get; set; }
     }
 }

@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Domain.Models
 {
@@ -113,6 +113,10 @@ namespace Domain.Models
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.PhotoUrl)
+                    .HasMaxLength(255)
+                    .HasColumnName("PhotoURL");
 
                 entity.Property(e => e.Title).HasMaxLength(255);
 
