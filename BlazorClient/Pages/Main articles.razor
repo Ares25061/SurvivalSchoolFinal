@@ -43,6 +43,9 @@
 <div class="my-5 container main-content pt-5">
     <div class="row ">
         <div class="col-md-12">
+             <div class="d-flex justify-content-end mb-3">
+                <button class="btn btn-success" @onclick="CreateArticle">Создать статью</button>
+            </div>
             @if (Lectures == null)
             {
                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -98,6 +101,22 @@
                 // Если пользователь не найден, устанавливаем "Неизвестный пользователь"
                 lecture.Author = "Неизвестный пользователь";
             }
+        }
+    }
+
+     private async Task CreateArticle()
+    {
+        if (BlazorUser.User == null)
+        {
+            var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Для создании статьи вам необходимо войти в аккаунт. Хотите войти в аккаунт?");
+            if (confirmed)
+            {
+                NavigationManager.NavigateTo("/login");
+            }
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/create-article");
         }
     }
 

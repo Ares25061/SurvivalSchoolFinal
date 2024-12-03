@@ -1,0 +1,89 @@
+@page "/create-article"
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject BlazorUser BlazorUser
+@using Microsoft.AspNetCore.Components.Forms
+
+<h3>Создать статью</h3>
+
+<EditForm Model="@newLectureRequest" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="title">Заголовок</label>
+        <InputText id="title" class="form-control" @bind-Value="newLectureRequest.Title" />
+    </div>
+
+    <div class="form-group">
+        <label for="content">Содержание</label>
+        <InputTextArea id="content" class="form-control" @bind-Value="newLectureRequest.Content" />
+    </div>
+
+    <div class="form-group">
+        <label for="categoryId">Категория</label>
+        <InputSelect id="categoryId" class="form-control" @bind-Value="newLectureRequest.CategoryId">
+            @foreach (var category in categories)
+            {
+                <option value="@category.Key">@category.Value</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="form-group">
+        <label for="photoUrl">URL фотографии</label>
+        <InputText id="photoUrl" class="form-control" @bind-Value="newLectureRequest.PhotoUrl" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Добавить</button>
+</EditForm>
+
+@code {
+    private CreateLectureRequest newLectureRequest = new CreateLectureRequest();
+    private Dictionary<int, string> categories = new Dictionary<int, string>();
+
+    protected override void OnInitialized()
+    {
+        // Заполняем словарь категорий
+        categories = new Dictionary<int, string>
+{
+{ 1, "Лес" },
+{ 2, "Остров" },
+{ 3, "Колледж Царицыно" }
+};
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        // Устанавливаем ID пользователя, создавшего статью
+        newLectureRequest.CreatedBy = BlazorUser.User.UserId;
+
+        // Устанавливаем статус модерации в false
+        newLectureRequest.IsApproved = false;
+
+        // Отправляем данные на сервер
+        var response = await HttpClient.PostAsJsonAsync("api/Lecture", newLectureRequest);
+
+        if (response.IsSuccessStatusCode)
+        {
+            // Перенаправляем пользователя на страницу со списком статей
+            NavigationManager.NavigateTo("/articles");
+        }
+        else
+        {
+            // Обработка ошибки
+            var errorMessage = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Ошибка при создании статьи: {errorMessage}");
+        }
+    }
+
+    public class CreateLectureRequest
+    {
+        public string Title { get; set; } = null!;
+        public string Content { get; set; } = null!;
+        public int CategoryId { get; set; }
+        public int CreatedBy { get; set; }
+        public string? PhotoUrl { get; set; }
+        public bool IsApproved { get; set; } = false; // По умолчанию статья не прошла модерацию
+    }
+}
