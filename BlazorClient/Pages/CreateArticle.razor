@@ -3,7 +3,6 @@
 @inject NavigationManager NavigationManager
 @inject BlazorUser BlazorUser
 @using Microsoft.AspNetCore.Components.Forms
-@using System.Text.RegularExpressions
 
 <h3>Создать статью</h3>
 
@@ -46,10 +45,6 @@
     <div class="form-group">
         <label for="photoUrl">URL фотографии</label>
         <InputText id="photoUrl" class="form-control" @bind-Value="newLectureRequest.PhotoUrl" />
-        @if (ShowPhotoUrlMessage)
-        {
-            <p class="text-danger">URL фотографии не введен или не соответствует требованиям</p>
-        }
     </div>
 
     <button type="submit" class="btn btn-primary" disabled="@IsLoading">
@@ -90,7 +85,6 @@
         ShowTitleMessage = string.IsNullOrEmpty(newLectureRequest.Title);
         ShowContentMessage = string.IsNullOrEmpty(newLectureRequest.Content);
         ShowCategoryMessage = !categories.ContainsKey(newLectureRequest.CategoryId);
-        ShowPhotoUrlMessage = !IsValidUrl(newLectureRequest.PhotoUrl);
 
         if (!ShowTitleMessage && !ShowContentMessage && !ShowCategoryMessage && !ShowPhotoUrlMessage)
         {
@@ -108,11 +102,17 @@
                 return;
             }
 
+            // Устанавливаем дату создания и обновления
+            newLectureRequest.CreatedDate = DateTime.UtcNow;
+            newLectureRequest.UpdatedDate = DateTime.UtcNow;
+
             // Устанавливаем статус модерации в false
             newLectureRequest.IsApproved = false;
 
             // Отправляем данные на сервер
-            var response = await HttpClient.PostAsJsonAsync("api/Lecture", newLectureRequest);
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("https://survivalschoolfinalapi.onrender.com/");
+            HttpResponseMessage response = await client.PostAsJsonAsync("api/Lecture", newLectureRequest);
 
             if (response.IsSuccessStatusCode)
             {
@@ -130,22 +130,14 @@
         }
     }
 
-    private bool IsValidUrl(string url)
-    {
-        if (string.IsNullOrWhiteSpace(url))
-            return false;
-
-        // Проверка на соответствие формату URL
-        string pattern = @"^(http|https)://[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,3}(/S*)?$";
-        return Regex.IsMatch(url, pattern);
-    }
-
     public class CreateLectureRequest
     {
         public string Title { get; set; } = null!;
         public string Content { get; set; } = null!;
         public int CategoryId { get; set; }
         public int CreatedBy { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime UpdatedDate { get; set; }
         public string? PhotoUrl { get; set; }
         public bool IsApproved { get; set; } = false; // По умолчанию статья не прошла модерацию
     }
