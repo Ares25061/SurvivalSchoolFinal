@@ -1,0 +1,152 @@
+﻿@page "/create-article"
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject BlazorUser BlazorUser
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Text.RegularExpressions
+
+<h3>Создать статью</h3>
+
+<EditForm Model="@newLectureRequest" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="title">Заголовок</label>
+        <InputText id="title" class="form-control" @bind-Value="newLectureRequest.Title" />
+        @if (ShowTitleMessage)
+        {
+            <p class="text-danger">Заголовок не введен или не соответствует требованиям</p>
+        }
+    </div>
+
+    <div class="form-group">
+        <label for="content">Содержание</label>
+        <InputTextArea id="content" class="form-control" @bind-Value="newLectureRequest.Content" />
+        @if (ShowContentMessage)
+        {
+            <p class="text-danger">Содержание не введено или не соответствует требованиям</p>
+        }
+    </div>
+
+    <div class="form-group">
+        <label for="categoryId">Категория</label>
+        <InputSelect id="categoryId" class="form-control" @bind-Value="newLectureRequest.CategoryId">
+            @foreach (var category in categories)
+            {
+                <option value="@category.Key">@category.Value</option>
+            }
+        </InputSelect>
+        @if (ShowCategoryMessage)
+        {
+            <p class="text-danger">Категория не выбрана или не соответствует требованиям</p>
+        }
+    </div>
+
+    <div class="form-group">
+        <label for="photoUrl">URL фотографии</label>
+        <InputText id="photoUrl" class="form-control" @bind-Value="newLectureRequest.PhotoUrl" />
+        @if (ShowPhotoUrlMessage)
+        {
+            <p class="text-danger">URL фотографии не введен или не соответствует требованиям</p>
+        }
+    </div>
+
+    <button type="submit" class="btn btn-primary" disabled="@IsLoading">
+        @if (IsLoading)
+        {
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <span>Загрузка...</span>
+        }
+        else
+        {
+            <span>Добавить</span>
+        }
+    </button>
+</EditForm>
+
+@code {
+    private CreateLectureRequest newLectureRequest = new CreateLectureRequest();
+    private Dictionary<int, string> categories = new Dictionary<int, string>();
+    private bool ShowTitleMessage { get; set; }
+    private bool ShowContentMessage { get; set; }
+    private bool ShowCategoryMessage { get; set; }
+    private bool ShowPhotoUrlMessage { get; set; }
+    private bool IsLoading { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // Заполняем словарь категорий
+        categories = new Dictionary<int, string>
+        {
+            { 1, "Лес" },
+            { 2, "Остров" },
+            { 3, "Колледж Царицыно" }
+        };
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        ShowTitleMessage = string.IsNullOrEmpty(newLectureRequest.Title);
+        ShowContentMessage = string.IsNullOrEmpty(newLectureRequest.Content);
+        ShowCategoryMessage = !categories.ContainsKey(newLectureRequest.CategoryId);
+        ShowPhotoUrlMessage = !IsValidUrl(newLectureRequest.PhotoUrl);
+
+        if (!ShowTitleMessage && !ShowContentMessage && !ShowCategoryMessage && !ShowPhotoUrlMessage)
+        {
+            IsLoading = true; // Устанавливаем флаг загрузки
+
+            // Устанавливаем ID пользователя, создавшего статью
+            if (BlazorUser?.User?.UserId != null)
+            {
+                newLectureRequest.CreatedBy = BlazorUser.User.UserId;
+            }
+            else
+            {
+                Console.WriteLine("Ошибка: ID пользователя не установлен.");
+                IsLoading = false; // Сбрасываем флаг загрузки
+                return;
+            }
+
+            // Устанавливаем статус модерации в false
+            newLectureRequest.IsApproved = false;
+
+            // Отправляем данные на сервер
+            var response = await HttpClient.PostAsJsonAsync("api/Lecture", newLectureRequest);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Перенаправляем пользователя на страницу со списком статей
+                NavigationManager.NavigateTo("/articles");
+            }
+            else
+            {
+                // Обработка ошибки
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Ошибка при создании статьи: {errorMessage}");
+            }
+
+            IsLoading = false; // Сбрасываем флаг загрузки
+        }
+    }
+
+    private bool IsValidUrl(string url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+            return false;
+
+        // Проверка на соответствие формату URL
+        string pattern = @"^(http|https)://[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,3}(/S*)?$";
+        return Regex.IsMatch(url, pattern);
+    }
+
+    public class CreateLectureRequest
+    {
+        public string Title { get; set; } = null!;
+        public string Content { get; set; } = null!;
+        public int CategoryId { get; set; }
+        public int CreatedBy { get; set; }
+        public string? PhotoUrl { get; set; }
+        public bool IsApproved { get; set; } = false; // По умолчанию статья не прошла модерацию
+    }
+}
