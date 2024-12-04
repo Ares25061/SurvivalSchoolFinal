@@ -83,5 +83,18 @@ namespace BusinessLogic.Services
             await _repositoryWrapper.Lecture.Delete(Lecture.First());
             await _repositoryWrapper.Save();
         }
+
+        // Новый метод для одобрения статьи
+        public async Task Approve(int id)
+        {
+            var lecture = await GetById(id);
+            if (lecture == null)
+            {
+                throw new ArgumentNullException("Not found");
+            }
+
+            lecture.IsApproved = true;
+            await Update(lecture);
+        }
     }
 }

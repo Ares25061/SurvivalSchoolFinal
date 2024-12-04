@@ -14,5 +14,6 @@ namespace Domain.Interfaces
         Task Create(Lecture model);
         Task Update(Lecture model);
         Task Delete(int id);
+        Task Approve(int id);
     }
 }

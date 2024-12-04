@@ -43,8 +43,12 @@
 <div class="my-5 container main-content pt-5">
     <div class="row ">
         <div class="col-md-12">
-             <div class="d-flex justify-content-end mb-3">
+            <div class="d-flex justify-content-end mb-3">
                 <button class="btn btn-success" @onclick="CreateArticle">Создать статью</button>
+                @if (BlazorUser.User != null && BlazorUser.User.RoleId == 2)
+                {
+                    <button class="btn btn-warning ms-2" @onclick="ShowUnapprovedArticles">Перейти к неподтверждённым статьям</button>
+                }
             </div>
             @if (Lectures == null)
             {
@@ -66,7 +70,17 @@
                                     </p>
                                     <p class="card-text text-muted">@lecture.CreatedDate.ToShortDateString()</p>
                                     <p class="card-text text-muted">Автор: @lecture.Author</p>
-                                    <a href="@($"/article/{lecture.LectureID}")" class="btn btn-primary mt-auto">Читать далее</a>
+                                    <div class="d-flex justify-content-between">
+                                        <a href="@($"/article/{lecture.LectureID}")" class="btn btn-primary mt-auto">Читать далее</a>
+                                        @if (BlazorUser.User != null && BlazorUser.User.RoleId == 2)
+                                        {
+                                            <button class="btn btn-danger ms-2" @onclick="() => DeleteArticle(lecture.LectureID)">Удалить статью</button>
+                                            @if (!lecture.IsApproved)
+                                            {
+                                                <button class="btn btn-success ms-2" @onclick="() => ApproveArticle(lecture.LectureID)">Одобрить статью</button>
+                                            }
+                                        }
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -79,14 +93,40 @@
 
 @code {
     private List<GetLectureResponse> Lectures;
+    private bool ShowUnapproved = false;
 
     protected override async Task OnInitializedAsync()
+    {
+        await LoadLectures();
+    }
+
+    private async Task LoadLectures()
     {
         HttpClient client = new HttpClient();
         client.BaseAddress = new Uri("https://survivalschoolfinalapi.onrender.com/");
 
         // Получаем список лекций
-        Lectures = await client.GetFromJsonAsync<List<GetLectureResponse>>("api/Lecture");
+        var lectures = await client.GetFromJsonAsync<List<GetLectureResponse>>("api/Lecture");
+
+        // Фильтруем лекции в зависимости от роли пользователя и статуса утверждения
+        if (BlazorUser.User != null)
+        {
+            if (BlazorUser.User.RoleId == 1) // Обычный пользователь
+            {
+                lectures = lectures.Where(l => l.IsApproved).ToList();
+            }
+            else if (BlazorUser.User.RoleId == 2 && ShowUnapproved) // Администратор и показываем неподтвержденные
+            {
+                lectures = lectures.Where(l => !l.IsApproved).ToList();
+            }
+        }
+        else
+        {
+            // Если пользователь не авторизован, показываем только утвержденные статьи
+            lectures = lectures.Where(l => l.IsApproved).ToList();
+        }
+
+        Lectures = lectures;
 
         // Получаем информацию о пользователях для каждой лекции
         foreach (var lecture in Lectures)
@@ -104,7 +144,7 @@
         }
     }
 
-     private async Task CreateArticle()
+    private async Task CreateArticle()
     {
         if (BlazorUser.User == null)
         {
@@ -120,14 +160,73 @@
         }
     }
 
+    private async Task ShowUnapprovedArticles()
+    {
+        ShowUnapproved = true;
+        await LoadLectures();
+    }
+
+    private async Task DeleteArticle(int lectureId)
+    {
+        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Вы точно уверены, что хотите удалить статью?");
+        if (confirmed)
+        {
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("https://survivalschoolfinalapi.onrender.com/");
+
+            var response = await client.DeleteAsync($"api/Lecture/{lectureId}");
+            if (response.IsSuccessStatusCode)
+            {
+                Lectures = Lectures.Where(l => l.LectureID != lectureId).ToList();
+            }
+            else
+            {
+                // Обработка ошибки удаления
+                await JSRuntime.InvokeVoidAsync("alert", "Не удалось удалить статью.");
+            }
+        }
+    }
+
+    private async Task ApproveArticle(int lectureId)
+    {
+        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Вы точно уверены, что хотите одобрить статью?");
+        if (confirmed)
+        {
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("https://survivalschoolfinalapi.onrender.com/");
+
+            var response = await client.PutAsync($"api/Lecture/approve/{lectureId}", null);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Обновляем локальный список статей
+                var updatedLecture = Lectures.FirstOrDefault(l => l.LectureID == lectureId);
+                if (updatedLecture != null)
+                {
+                    updatedLecture.IsApproved = true;
+                }
+
+                await JSRuntime.InvokeVoidAsync("alert", "Статья успешно одобрена.");
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Не удалось одобрить статью.");
+            }
+        }
+    }
+
     public class GetLectureResponse
     {
         public int LectureID { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
+        public int CategoryId { get; set; }
+        public DateTime UpdatedDate { get; set; }
+        public string? PhotoUrl { get; set; }
         public int CreatedBy { get; set; }
         public DateTime CreatedDate { get; set; }
         public string Author { get; set; } // Добавляем свойство для имени автора
+        public bool IsApproved { get; set; } // Добавляем свойство для статуса утверждения
     }
 
     public class User

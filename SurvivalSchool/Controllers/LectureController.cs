@@ -95,9 +95,14 @@ namespace SurvivalSchool.Controllers
         /// <returns></returns>
 
         // PUT api/<LectureController>
-        [HttpPut]
-        public async Task<IActionResult> Update(GetLectureResponse lecture)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, GetLectureResponse lecture)
         {
+            if (id != lecture.LectureId)
+            {
+                return BadRequest();
+            }
+
             var Dto = lecture.Adapt<Lecture>();
             await _lectureService.Update(Dto);
             return Ok();
@@ -110,10 +115,24 @@ namespace SurvivalSchool.Controllers
         /// <returns></returns>
 
         // DELETE api/<LectureController>
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             await _lectureService.Delete(id);
+            return Ok();
+        }
+
+        /// <summary>
+        /// Одобрение лекции
+        /// </summary>
+        /// <param name="id">ID</param>
+        /// <returns></returns>
+
+        // PUT api/<LectureController>/approve/{id}
+        [HttpPut("approve/{id}")]
+        public async Task<IActionResult> Approve(int id)
+        {
+            await _lectureService.Approve(id);
             return Ok();
         }
     }
