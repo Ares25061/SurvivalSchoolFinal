@@ -49,6 +49,11 @@
                 {
                     <button class="btn btn-warning ms-2" @onclick="ShowUnapprovedArticles">Перейти к неподтверждённым статьям</button>
                 }
+                @if (BlazorUser.User != null)
+                {
+                    <button class="btn btn-info ms-2" @onclick="ShowMyArticles">Перейти к своим статьям</button>
+                }
+                <button class="btn btn-secondary ms-2" @onclick="ShowAllArticles">Все статьи</button>
             </div>
             @if (Lectures == null)
             {
@@ -72,10 +77,13 @@
                                     <p class="card-text text-muted">Автор: @lecture.Author</p>
                                     <div class="d-flex justify-content-between">
                                         <a href="@($"/article/{lecture.LectureID}")" class="btn btn-primary mt-auto">Читать далее</a>
-                                        @if (BlazorUser.User != null && BlazorUser.User.RoleId == 2)
+                                        @if (BlazorUser.User != null)
                                         {
-                                            <button class="btn btn-danger ms-2" @onclick="() => DeleteArticle(lecture.LectureID)">Удалить статью</button>
-                                            @if (!lecture.IsApproved)
+                                            @if (BlazorUser.User.RoleId == 2 || (BlazorUser.User.RoleId != 2 && lecture.CreatedBy == BlazorUser.User.UserId))
+                                            {
+                                                <button class="btn btn-danger ms-2" @onclick="() => DeleteArticle(lecture.LectureID)">Удалить статью</button>
+                                            }
+                                            @if (BlazorUser.User.RoleId == 2 && !lecture.IsApproved)
                                             {
                                                 <button class="btn btn-success ms-2" @onclick="() => ApproveArticle(lecture.LectureID)">Одобрить статью</button>
                                             }
@@ -94,6 +102,7 @@
 @code {
     private List<GetLectureResponse> Lectures;
     private bool ShowUnapproved = false;
+    private bool ShowMyArticlesFlag = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -111,13 +120,17 @@
         // Фильтруем лекции в зависимости от роли пользователя и статуса утверждения
         if (BlazorUser.User != null)
         {
-            if (BlazorUser.User.RoleId == 1) // Обычный пользователь
+            if (BlazorUser.User.RoleId == 1 && !ShowMyArticlesFlag) // Обычный пользователь и не показываем свои статьи
             {
                 lectures = lectures.Where(l => l.IsApproved).ToList();
             }
             else if (BlazorUser.User.RoleId == 2 && ShowUnapproved) // Администратор и показываем неподтвержденные
             {
                 lectures = lectures.Where(l => !l.IsApproved).ToList();
+            }
+            else if (ShowMyArticlesFlag) // Показываем только статьи текущего пользователя
+            {
+                lectures = lectures.Where(l => l.CreatedBy == BlazorUser.User.UserId).ToList();
             }
         }
         else
@@ -163,6 +176,21 @@
     private async Task ShowUnapprovedArticles()
     {
         ShowUnapproved = true;
+        ShowMyArticlesFlag = false; // Сбрасываем флаг своих статей
+        await LoadLectures();
+    }
+
+    private async Task ShowMyArticles()
+    {
+        ShowMyArticlesFlag = true;
+        ShowUnapproved = false; // Сбрасываем флаг неподтвержденных статей
+        await LoadLectures();
+    }
+
+    private async Task ShowAllArticles()
+    {
+        ShowUnapproved = false;
+        ShowMyArticlesFlag = false;
         await LoadLectures();
     }
 
