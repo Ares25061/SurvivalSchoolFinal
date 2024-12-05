@@ -1,0 +1,145 @@
+﻿@page "/edit-article/{id:int}"
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject BlazorUser BlazorUser
+@using Microsoft.AspNetCore.Components.Forms
+
+<h3>Изменить статью</h3>
+
+<EditForm Model="@editLectureRequest" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="title">Заголовок</label>
+        <InputText id="title" class="form-control" @bind-Value="editLectureRequest.Title" />
+        @if (ShowTitleMessage)
+        {
+            <p class="text-danger">Заголовок не введен или не соответствует требованиям</p>
+        }
+    </div>
+
+    <div class="form-group">
+        <label for="content">Содержание</label>
+        <InputTextArea id="content" class="form-control" @bind-Value="editLectureRequest.Content" />
+        @if (ShowContentMessage)
+        {
+            <p class="text-danger">Содержание не введено или не соответствует требованиям</p>
+        }
+    </div>
+
+    <div class="form-group">
+        <label for="categoryId">Категория</label>
+        <InputSelect id="categoryId" class="form-control" @bind-Value="editLectureRequest.CategoryId">
+            @foreach (var category in categories)
+            {
+                <option value="@category.Key">@category.Value</option>
+            }
+        </InputSelect>
+        @if (ShowCategoryMessage)
+        {
+            <p class="text-danger">Категория не выбрана или не соответствует требованиям</p>
+        }
+    </div>
+
+    <div class="form-group">
+        <label for="photoUrl">URL фотографии</label>
+        <InputText id="photoUrl" class="form-control" @bind-Value="editLectureRequest.PhotoUrl" />
+    </div>
+
+    <button type="submit" class="btn btn-primary" disabled="@IsLoading">
+        @if (IsLoading)
+        {
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <span>Загрузка...</span>
+        }
+        else
+        {
+            <span>Сохранить изменения</span>
+        }
+    </button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private GetLectureResponse editLectureRequest = new GetLectureResponse();
+    private Dictionary<int, string> categories = new Dictionary<int, string>();
+    private bool ShowTitleMessage { get; set; }
+    private bool ShowContentMessage { get; set; }
+    private bool ShowCategoryMessage { get; set; }
+    private bool ShowPhotoUrlMessage { get; set; }
+    private bool IsLoading { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Заполняем словарь категорий
+        categories = new Dictionary<int, string>
+        {
+            { 1, "Лес" },
+            { 2, "Остров" },
+            { 3, "Колледж Царицыно" }
+        };
+
+        // Загружаем данные статьи для редактирования
+        await LoadLectureData();
+    }
+
+    private async Task LoadLectureData()
+    {
+        HttpClient client = new HttpClient();
+        client.BaseAddress = new Uri("https://survivalschoolfinalapi.onrender.com/");
+
+        // Получаем данные статьи по ID
+        editLectureRequest = await client.GetFromJsonAsync<GetLectureResponse>($"api/Lecture/{Id}");
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        ShowTitleMessage = string.IsNullOrEmpty(editLectureRequest.Title);
+        ShowContentMessage = string.IsNullOrEmpty(editLectureRequest.Content);
+        ShowCategoryMessage = !categories.ContainsKey(editLectureRequest.CategoryId);
+
+        if (!ShowTitleMessage && !ShowContentMessage && !ShowCategoryMessage && !ShowPhotoUrlMessage)
+        {
+            IsLoading = true; // Устанавливаем флаг загрузки
+
+            // Обновляем дату обновления и статус утверждения
+            editLectureRequest.UpdatedDate = DateTime.UtcNow;
+            editLectureRequest.IsApproved = false;
+
+            // Отправляем данные на сервер
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("https://survivalschoolfinalapi.onrender.com/");
+            HttpResponseMessage response = await client.PutAsJsonAsync($"api/Lecture/{Id}", editLectureRequest);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Перенаправляем пользователя на страницу со списком статей
+                NavigationManager.NavigateTo("/articles");
+            }
+            else
+            {
+                // Обработка ошибки
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Ошибка при редактировании статьи: {errorMessage}");
+            }
+
+            IsLoading = false; // Сбрасываем флаг загрузки
+        }
+    }
+
+    public class GetLectureResponse
+    {
+        public int LectureId { get; set; }
+        public string Title { get; set; }
+        public string Content { get; set; }
+        public int CategoryId { get; set; }
+        public int CreatedBy { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime UpdatedDate { get; set; }
+        public string? PhotoUrl { get; set; }
+        public bool IsApproved { get; set; }
+    }
+}
