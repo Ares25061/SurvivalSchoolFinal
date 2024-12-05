@@ -9,7 +9,6 @@
     .unapproved-article {
         border: 2px solid red;
     }
-
     .unapproved-label {
         color: red;
         font-weight: bold;
@@ -91,22 +90,18 @@
                                     </p>
                                     <p class="card-text text-muted">@lecture.CreatedDate.ToShortDateString()</p>
                                     <p class="card-text text-muted">Автор: @lecture.Author</p>
-                                    @if (lecture.LastModifiedBy.HasValue)
-                                    {
-                                        <p class="card-text text-muted">Последнее изменение: @lecture.LastModifiedDate.Value.ToShortDateString() by @lecture.LastModifiedByUsername</p>
-                                    }
                                     <div class="d-flex justify-content-between">
-                                        <a href="@($"/article/{lecture.LectureId}")" class="btn btn-primary mt-auto">Читать далее</a>
+                                        <a href="@($"/article/{lecture.LectureID}")" class="btn btn-primary mt-auto">Читать далее</a>
                                         @if (BlazorUser.User != null)
                                         {
                                             @if (BlazorUser.User.RoleId == 2 || (BlazorUser.User.RoleId != 2 && lecture.CreatedBy == BlazorUser.User.UserId))
                                             {
-                                                <button class="btn btn-danger ms-2" @onclick="() => DeleteArticle(lecture.LectureId)">Удалить статью</button>
-                                                <button class="btn btn-warning ms-2" @onclick="() => EditArticle(lecture.LectureId)">Изменить статью</button>
+                                                <button class="btn btn-danger ms-2" @onclick="() => DeleteArticle(lecture.LectureID)">Удалить статью</button>
+                                                <button class="btn btn-warning ms-2" @onclick="() => EditArticle(lecture.LectureID)">Изменить статью</button>
                                             }
                                             @if (BlazorUser.User.RoleId == 2 && !lecture.IsApproved)
                                             {
-                                                <button class="btn btn-success ms-2" @onclick="() => ApproveArticle(lecture.LectureId)">Одобрить статью</button>
+                                                <button class="btn btn-success ms-2" @onclick="() => ApproveArticle(lecture.LectureID)">Одобрить статью</button>
                                             }
                                         }
                                     </div>
@@ -119,6 +114,7 @@
         </div>
     </div>
 </div>
+
 @code {
     private List<GetLectureResponse> Lectures;
     private bool ShowUnapproved = false;
@@ -168,18 +164,11 @@
             {
                 var user = await client.GetFromJsonAsync<User>($"/api/User/{lecture.CreatedBy}");
                 lecture.Author = user?.Username ?? "Неизвестный пользователь";
-
-                if (lecture.LastModifiedBy.HasValue)
-                {
-                    var lastModifiedUser = await client.GetFromJsonAsync<User>($"/api/User/{lecture.LastModifiedBy.Value}");
-                    lecture.LastModifiedByUsername = lastModifiedUser?.Username ?? "Неизвестный пользователь";
-                }
             }
             catch (HttpRequestException)
             {
                 // Если пользователь не найден, устанавливаем "Неизвестный пользователь"
                 lecture.Author = "Неизвестный пользователь";
-                lecture.LastModifiedByUsername = "Неизвестный пользователь";
             }
         }
     }
@@ -232,7 +221,7 @@
             var response = await client.DeleteAsync($"api/Lecture/{lectureId}");
             if (response.IsSuccessStatusCode)
             {
-                Lectures = Lectures.Where(l => l.LectureId != lectureId).ToList();
+                Lectures = Lectures.Where(l => l.LectureID != lectureId).ToList();
             }
             else
             {
@@ -255,7 +244,7 @@
             if (response.IsSuccessStatusCode)
             {
                 // Обновляем локальный список статей
-                var updatedLecture = Lectures.FirstOrDefault(l => l.LectureId == lectureId);
+                var updatedLecture = Lectures.FirstOrDefault(l => l.LectureID == lectureId);
                 if (updatedLecture != null)
                 {
                     updatedLecture.IsApproved = true;
@@ -277,19 +266,16 @@
 
     public class GetLectureResponse
     {
-        public int LectureId { get; set; }
+        public int LectureID { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
         public int CategoryId { get; set; }
-        public int CreatedBy { get; set; }
-        public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
         public string? PhotoUrl { get; set; }
-        public bool IsApproved { get; set; }
-        public int? LastModifiedBy { get; set; } // ID последнего редактора
-        public DateTime? LastModifiedDate { get; set; } // Время последнего изменения
+        public int CreatedBy { get; set; }
+        public DateTime CreatedDate { get; set; }
         public string Author { get; set; } // Добавляем свойство для имени автора
-        public string LastModifiedByUsername { get; set; } // Имя последнего редактора
+        public bool IsApproved { get; set; } // Добавляем свойство для статуса утверждения
     }
 
     public class User

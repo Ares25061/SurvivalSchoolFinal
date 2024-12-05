@@ -14,9 +14,6 @@ namespace Domain.Models
         public DateTime UpdatedDate { get; set; }
         public string? PhotoUrl { get; set; }
         public bool IsApproved { get; set; }
-        public int? LastModifiedBy { get; set; } // ID последнего редактора
-        public DateTime? LastModifiedDate { get; set; } // Время последнего изменения
-
         public virtual Category Category { get; set; } = null!;
         public virtual User CreatedByNavigation { get; set; } = null!;
     }
