@@ -103,22 +103,8 @@ namespace SurvivalSchool.Controllers
                 return BadRequest();
             }
 
-            var existingLecture = await _lectureService.GetById(id);
-            if (existingLecture == null)
-            {
-                return NotFound();
-            }
-
-            // Обновляем поля статьи
-            existingLecture.Title = lecture.Title;
-            existingLecture.Content = lecture.Content;
-            existingLecture.CategoryId = lecture.CategoryId;
-            existingLecture.UpdatedDate = DateTime.UtcNow;
-            existingLecture.IsApproved = false;
-            existingLecture.LastModifiedBy = lecture.CreatedBy; // ID текущего пользователя
-            existingLecture.LastModifiedDate = DateTime.UtcNow;
-
-            await _lectureService.Update(existingLecture);
+            var Dto = lecture.Adapt<Lecture>();
+            await _lectureService.Update(Dto);
             return Ok();
         }
 
