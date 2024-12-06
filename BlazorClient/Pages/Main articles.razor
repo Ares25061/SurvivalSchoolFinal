@@ -1,5 +1,5 @@
 
- 
+
 
 @page "/articles"
 @inject IJSRuntime JSRuntime
@@ -28,15 +28,15 @@
                 </li> *@
                 @if (BlazorUser.User != null)
                 {
-                    <li class="nav-item">
-                        <a class="nav-link" href="/profile">Личный кабинет</a>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/profile">Личный кабинет</a>
+                        </li>
                 }
                 else
                 {
-                    <li class="nav-item">
-                        <a class="nav-link" href="/login">Войти</a>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/login">Войти</a>
+                        </li>
                 }
             </ul>
         </div>
@@ -52,15 +52,15 @@
                 </button>
                 @if (BlazorUser.User != null && BlazorUser.User.RoleId == 2)
                 {
-                    <button class="btn btn-warning ms-2" @onclick="ShowUnapprovedArticles">
-                        <i class="bi bi-eye"></i>
-                    </button>
+                        <button class="btn btn-warning ms-2" @onclick="ShowUnapprovedArticles">
+                            <i class="bi bi-eye"></i>
+                        </button>
                 }
                 @if (BlazorUser.User != null)
                 {
-                    <button class="btn btn-info ms-2" @onclick="ShowMyArticles">
-                        <i class="bi bi-bookmark-heart"></i>
-                    </button>
+                        <button class="btn btn-info ms-2" @onclick="ShowMyArticles">
+                            <i class="bi bi-bookmark-heart"></i>
+                        </button>
                 }
                 <button class="btn btn-secondary ms-2" @onclick="ShowAllArticles">
                     <i class="bi bi-bookmarks"></i>
@@ -68,86 +68,86 @@
             </div>
             @if (Lectures == null)
             {
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                <span>Загрузка...</span>
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span>Загрузка...</span>
             }
             else
             {
                 @if (BlazorUser.User != null && BlazorUser.User.RoleId == 2)
                 {
-                    <div class="row row-cols-1 row-cols-md-3 g-3">
+                            <div class="row row-cols-1 row-cols-md-3 g-3">
                         @foreach (var lecture in Lectures)
                         {
-                            <div class="col">
-                                <div class="card h-100 @(lecture.IsApproved ? "" : "unapproved-article")">
-                                    <div class="card-body d-flex flex-column justify-content-between">
+                                        <div class="col">
+                                            <div class="card h-100 @(lecture.IsApproved ? "" : "unapproved-article")">
+                                                <div class="card-body d-flex flex-column justify-content-between">
                                         @if (!lecture.IsApproved)
                                         {
-                                            <div class="unapproved-label">Не одобрена</div>
+                                                            <div class="unapproved-label">Не одобрена</div>
                                         }
-                                        <h5 class="card-title">@lecture.Title</h5>
-                                        <p class="card-text flex-grow-1">
+                                                    <h5 class="card-title">@lecture.Title</h5>
+                                                    <p class="card-text flex-grow-1">
                                             @(lecture.Content.Length > 250 ?
-                                                lecture.Content.Substring(0, 250) + "..." : lecture.Content)
-                                        </p>
-                                        
-                                        <p class="card-text">
-                                            <i class="bi bi-person"></i> @lecture.Author
-                                            <span class="float-end">@lecture.CreatedDate.ToShortDateString()</span>
-                                        </p>
-                                        
-                                        <div class="d-flex">ы
-                                            <button class="btn btn-primary flex-grow-1" @onclick="() => NavigateToArticle(lecture.LectureID)">Читать далее</button>
-                                            <button class="btn btn-danger ms-2 flex-fill " @onclick="() => DeleteArticle(lecture.LectureID)" data-bs-toggle="tooltip" data-bs-placement="top" title="Удалить статью">
-                                                <i class="bi bi-trash3"></i>
-                                            </button>
-                                            <button class="btn btn-secondary ms-2 flex-fill" @onclick="() => EditArticle(lecture.LectureID)" data-bs-toggle="tooltip" data-bs-placement="top" title="Изменить статью">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </button>
+                                                    lecture.Content.Substring(0, 250) + "..." : lecture.Content)
+                                                    </p>
+
+                                                    <p class="card-text">
+                                                        <i class="bi bi-person"></i> @lecture.Author
+                                                        <span class="float-end">@lecture.CreatedDate.ToShortDateString()</span>
+                                                    </p>
+
+                                                    <div class="d-flex">
+                                                        <button class="btn btn-primary flex-grow-1" @onclick="() => NavigateToArticle(lecture.LectureID)">Читать далее</button>
+                                                        <button class="btn btn-danger ms-2 flex-fill " @onclick="() => DeleteArticle(lecture.LectureID)" data-bs-toggle="tooltip" data-bs-placement="top" title="Удалить статью">
+                                                            <i class="bi bi-trash3"></i>
+                                                        </button>
+                                                        <button class="btn btn-secondary ms-2 flex-fill" @onclick="() => EditArticle(lecture.LectureID)" data-bs-toggle="tooltip" data-bs-placement="top" title="Изменить статью">
+                                                            <i class="bi bi-pencil-square"></i>
+                                                        </button>
                                             @if (!lecture.IsApproved)
                                             {
-                                                <button class="btn btn-success ms-2 flex-fill" @onclick="() => ApproveArticle(lecture.LectureID)" data-bs-toggle="tooltip" data-bs-placement="top" title="Одобрить статью">
-                                                    <i class="bi bi-check2-square"></i>
-                                                </button>
+                                                                <button class="btn btn-success ms-2 flex-fill" @onclick="() => ApproveArticle(lecture.LectureID)" data-bs-toggle="tooltip" data-bs-placement="top" title="Одобрить статью">
+                                                                    <i class="bi bi-check2-square"></i>
+                                                                </button>
                                             }
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
                         }
-                    </div>
+                            </div>
                 }
                 else
                 {
-                    <div class="row row-cols-1 row-cols-md-3 g-3">
+                            <div class="row row-cols-1 row-cols-md-3 g-3">
                         @foreach (var lecture in Lectures)
                         {
-                            <div class="col">
-                                <div class="card h-100 @(lecture.IsApproved ? "" : "unapproved-article")">
-                                    <div class="card-body d-flex flex-column justify-content-between">
+                                        <div class="col">
+                                            <div class="card h-100 @(lecture.IsApproved ? "" : "unapproved-article")">
+                                                <div class="card-body d-flex flex-column justify-content-between">
                                         @if (!lecture.IsApproved)
                                         {
-                                            <div class="unapproved-label">Не одобрена</div>
+                                                            <div class="unapproved-label">Не одобрена</div>
                                         }
-                                        <h5 class="card-title">@lecture.Title</h5>
-                                        <p class="card-text flex-grow-1">
+                                                    <h5 class="card-title">@lecture.Title</h5>
+                                                    <p class="card-text flex-grow-1">
                                             @(lecture.Content.Length > 250 ? lecture.Content.Substring(0, 250) + "..." : lecture.Content)
-                                        </p>
-                                        
-                                        <p class="card-text">
-                                            <i class="bi bi-person"></i> @lecture.Author
-                                            <span class="float-end">@lecture.CreatedDate.ToShortDateString()</span>
-                                        </p>
-                                        
-                                        <a href="@($"/article/{lecture.LectureID}")" class="btn btn-primary mt-auto">Читать далее</a>
+                                                    </p>
+
+                                                    <p class="card-text">
+                                                        <i class="bi bi-person"></i> @lecture.Author
+                                                        <span class="float-end">@lecture.CreatedDate.ToShortDateString()</span>
+                                                    </p>
+
+                                                    <a href="@($"/article/{lecture.LectureID}")" class="btn btn-primary mt-auto">Читать далее</a>
                                         @* <div class="d-flex flex-fill">
                                             <button class="btn btn-primary flex-grow-1" @onclick="() => NavigateToArticle(lecture.LectureID)">Читать далее</button>
                                         </div> *@
-                                    </div>
-                                </div>
-                            </div>
+                                                </div>
+                                            </div>
+                                        </div>
                         }
-                    </div>
+                            </div>
                 }
             }
         </div>
@@ -302,7 +302,7 @@
     {
         NavigationManager.NavigateTo($"/edit-article/{lectureId}");
     }
-     private void NavigateToArticle(int lectureId)
+    private void NavigateToArticle(int lectureId)
     {
         NavigationManager.NavigateTo($"/article/{lectureId}");
     }
