@@ -10,7 +10,7 @@ namespace DataAccess.Repositories
 {
     public class VideoRepository : RepositoryBase<Video>, IVideoRepository
     {
-        public VideoRepository(SurvivalSchool1Context repositoryContext)
+        public VideoRepository(SurvivalSchool1234Context repositoryContext)
             : base(repositoryContext)
         {
         }

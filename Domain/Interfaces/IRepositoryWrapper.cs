@@ -16,5 +16,8 @@ public interface IRepositoryWrapper
     ITestRepository Test { get; }
     IUserTestResultRepository UserTestResult { get; }
     IVideoRepository Video { get; }
+    ILectureCommentsRepository LectureComments { get; }
+    INotificationsRepository Notifications { get; }
+    IVideoCommentsRepository VideoComments { get; }
     Task Save();
 }

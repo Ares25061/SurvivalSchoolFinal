@@ -12,9 +12,9 @@ namespace DataAccess.Repositories
 {
     public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {
-        protected SurvivalSchool1Context RepositoryContext { get; set; }
+        protected SurvivalSchool1234Context RepositoryContext { get; set; }
 
-        public RepositoryBase(SurvivalSchool1Context repositoryContext)
+        public RepositoryBase(SurvivalSchool1234Context repositoryContext)
         {
             RepositoryContext = repositoryContext;
         }

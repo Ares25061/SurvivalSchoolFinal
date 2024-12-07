@@ -10,7 +10,7 @@ namespace DataAccess.Repositories
 {
     public class ForumPostRepository : RepositoryBase<ForumPost>, IForumPostRepository
     {
-        public ForumPostRepository(SurvivalSchool1Context repositoryContext)
+        public ForumPostRepository(SurvivalSchool1234Context repositoryContext)
             : base(repositoryContext)
         {
         }

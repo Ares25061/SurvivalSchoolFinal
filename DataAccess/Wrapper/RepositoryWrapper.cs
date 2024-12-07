@@ -14,7 +14,7 @@ namespace DataAccess.Wrapper
 {
     public class RepositoryWrapper : IRepositoryWrapper
     {
-        private SurvivalSchool1Context _repoContext;
+        private SurvivalSchool1234Context _repoContext;
         private IUserRepository _user;
         public IUserRepository User
         {
@@ -111,7 +111,44 @@ namespace DataAccess.Wrapper
                 return _video;
             }
         }
-        public RepositoryWrapper(SurvivalSchool1Context repositoryContext)
+
+        private ILectureCommentsRepository _lectureComments;
+        public ILectureCommentsRepository LectureComments
+        {
+            get
+            {
+                if (_lectureComments == null)
+                {
+                    _lectureComments = new LectureComments(_repoContext);
+                }
+                return _lectureComments;
+            }
+        }
+        private IVideoCommentsRepository _videoComments;
+        public IVideoCommentsRepository VideoComments
+        {
+            get
+            {
+                if (_videoComments == null)
+                {
+                    _videoComments = new VideoComments(_repoContext);
+                }
+                return _videoComments;
+            }
+        }
+        private INotificationsRepository _notifications;
+        public INotificationsRepository Notifications
+        {
+            get
+            {
+                if (_notifications == null)
+                {
+                    _notifications = new NotificationsRepository(_repoContext);
+                }
+                return _notifications;
+            }
+        }
+        public RepositoryWrapper(SurvivalSchool1234Context repositoryContext)
         {
             _repoContext = repositoryContext;
         }

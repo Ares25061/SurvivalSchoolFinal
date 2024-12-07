@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Repositories
 {
-    public class TestQuestionRepository : RepositoryBase<TestQuestion>, ITestQuestionRepository
+    public class LectureComments : RepositoryBase<LectureComment>, ILectureCommentsRepository
     {
-        public TestQuestionRepository(SurvivalSchool1234Context repositoryContext)
+        public LectureComments(SurvivalSchool1234Context repositoryContext)
             : base(repositoryContext)
         {
         }

@@ -10,6 +10,7 @@ namespace Domain.Models
             ForumPosts = new HashSet<ForumPost>();
             ForumThreads = new HashSet<ForumThread>();
             Lectures = new HashSet<Lecture>();
+            Notifications = new HashSet<Notification>();
             Tests = new HashSet<Test>();
             UserTestResults = new HashSet<UserTestResult>();
             Videos = new HashSet<Video>();
@@ -24,11 +25,13 @@ namespace Domain.Models
         public DateTime RegistrationDate { get; set; }
         public DateTime? LastLoginDate { get; set; }
         public int RoleId { get; set; }
+        public string? AvatarUrl { get; set; }
 
         public virtual Role Role { get; set; } = null!;
         public virtual ICollection<ForumPost> ForumPosts { get; set; }
         public virtual ICollection<ForumThread> ForumThreads { get; set; }
         public virtual ICollection<Lecture> Lectures { get; set; }
+        public virtual ICollection<Notification> Notifications { get; set; }
         public virtual ICollection<Test> Tests { get; set; }
         public virtual ICollection<UserTestResult> UserTestResults { get; set; }
         public virtual ICollection<Video> Videos { get; set; }

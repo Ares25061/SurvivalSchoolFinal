@@ -10,7 +10,7 @@ namespace DataAccess.Repositories
 {
     public class UserRepository : RepositoryBase<User>, IUserRepository
     {
-        public UserRepository(SurvivalSchool1Context repositoryContext)
+        public UserRepository(SurvivalSchool1234Context repositoryContext)
             : base(repositoryContext)
         {
         }

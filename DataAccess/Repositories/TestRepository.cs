@@ -10,7 +10,7 @@ namespace DataAccess.Repositories
 {
     public class TestRepository : RepositoryBase<Test>, ITestRepository
     {
-        public TestRepository(SurvivalSchool1Context repositoryContext)
+        public TestRepository(SurvivalSchool1234Context repositoryContext)
             : base(repositoryContext)
         {
         }

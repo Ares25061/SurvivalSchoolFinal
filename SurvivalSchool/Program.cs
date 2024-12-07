@@ -22,7 +22,7 @@ namespace SurvivalSchool
             var builder = WebApplication.CreateBuilder(args);
 
             // Настройка базы данных
-            builder.Services.AddDbContext<SurvivalSchool1Context>(
+            builder.Services.AddDbContext<SurvivalSchool1234Context>(
                   options => options.UseSqlServer(builder.Configuration["ConnectionString"]));
 
             // Регистрация сервисов
@@ -35,6 +35,9 @@ namespace SurvivalSchool
             builder.Services.AddScoped<ILectureService, LectureService>();
             builder.Services.AddScoped<ITestQuestionService, TestQuestionService>();
             builder.Services.AddScoped<ITestService, TestService>();
+            builder.Services.AddScoped<ILectureCommentsService, LectureCommentService>();
+            builder.Services.AddScoped<IVideoCommentsService, VideoCommentService>();
+            builder.Services.AddScoped<INotificationsService, NotificationsService>();
 
             // Настройка контроллеров
             builder.Services.AddControllers();
@@ -85,7 +88,7 @@ namespace SurvivalSchool
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
-                using (var context = services.GetRequiredService<SurvivalSchool1Context>())
+                using (var context = services.GetRequiredService<SurvivalSchool1234Context>())
                 {
                     context.Database.Migrate();
                     context.Database.EnsureCreated();

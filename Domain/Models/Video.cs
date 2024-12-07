@@ -5,6 +5,11 @@ namespace Domain.Models
 {
     public partial class Video
     {
+        public Video()
+        {
+            VideoComments = new HashSet<VideoComment>();
+        }
+
         public int VideoId { get; set; }
         public string Title { get; set; } = null!;
         public string Url { get; set; } = null!;
@@ -15,5 +20,6 @@ namespace Domain.Models
 
         public virtual Category Category { get; set; } = null!;
         public virtual User CreatedByNavigation { get; set; } = null!;
+        public virtual ICollection<VideoComment> VideoComments { get; set; }
     }
 }

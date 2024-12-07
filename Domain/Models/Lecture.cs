@@ -5,6 +5,11 @@ namespace Domain.Models
 {
     public partial class Lecture
     {
+        public Lecture()
+        {
+            LectureComments = new HashSet<LectureComment>();
+        }
+
         public int LectureId { get; set; }
         public string Title { get; set; } = null!;
         public string Content { get; set; } = null!;
@@ -14,7 +19,9 @@ namespace Domain.Models
         public DateTime UpdatedDate { get; set; }
         public string? PhotoUrl { get; set; }
         public bool IsApproved { get; set; }
+
         public virtual Category Category { get; set; } = null!;
         public virtual User CreatedByNavigation { get; set; } = null!;
+        public virtual ICollection<LectureComment> LectureComments { get; set; }
     }
 }

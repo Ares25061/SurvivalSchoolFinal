@@ -5,12 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace DataAccess.Repositories
 {
-    public class TestQuestionRepository : RepositoryBase<TestQuestion>, ITestQuestionRepository
+    public class NotificationsRepository : RepositoryBase<Notification>, INotificationsRepository
     {
-        public TestQuestionRepository(SurvivalSchool1234Context repositoryContext)
+        public NotificationsRepository(SurvivalSchool1234Context repositoryContext)
             : base(repositoryContext)
         {
         }

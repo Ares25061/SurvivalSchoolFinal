@@ -10,7 +10,7 @@ namespace DataAccess.Repositories
 {
     public class LectureRepository : RepositoryBase<Lecture>, ILectureRepository
     {
-        public LectureRepository(SurvivalSchool1Context repositoryContext)
+        public LectureRepository(SurvivalSchool1234Context repositoryContext)
             : base(repositoryContext)
         {
         }
