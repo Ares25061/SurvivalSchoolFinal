@@ -14,5 +14,6 @@ namespace Domain.Interfaces
         Task Create(Notification model);
         Task Update(Notification model);
         Task Delete(int id);
+        Task Read(int id);
     }
 }

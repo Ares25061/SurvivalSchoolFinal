@@ -112,5 +112,19 @@ namespace SurvivalSchool.Controllers
             await _notificationsService.Delete(id);
             return Ok();
         }
+
+        /// <summary>
+        /// Прочтение уведомления
+        /// </summary>
+        /// <param name="id">ID</param>
+        /// <returns></returns>
+
+        // PUT api/<NotificationsController>/read/{id}
+        [HttpPut("read/{id}")]
+        public async Task<IActionResult> Read(int id)
+        {
+            await _notificationsService.Read(id);
+            return Ok();
+        }
     }
 }

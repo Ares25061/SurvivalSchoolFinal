@@ -80,5 +80,16 @@ namespace BusinessLogic.Services
             await _repositoryWrapper.Notifications.Delete(Notifications.First());
             await _repositoryWrapper.Save();
         }
+        public async Task Read(int id)
+        {
+            var Notifications = await GetById(id);
+            if (Notifications == null)
+            {
+                throw new ArgumentNullException("Not found");
+            }
+
+            Notifications.IsRead = true;
+            await Update(Notifications);
+        }
     }
 }
