@@ -99,21 +99,28 @@
                                             <span class="float-end">@lecture.CreatedDate.ToShortDateString()</span>
                                         </p>
 
-                                        <div class="d-flex">
-                                            <button class="btn btn-primary flex-grow-1" @onclick="() => NavigateToArticle(lecture.LectureID)">Читать далее</button>
-                                            <button class="btn btn-danger ms-2 flex-fill " @onclick="() => DeleteArticle(lecture.LectureID)" data-bs-toggle="tooltip" data-bs-placement="top" title="Удалить статью">
-                                                <i class="bi bi-trash3"></i>
-                                            </button>
-                                            <button class="btn btn-secondary ms-2 flex-fill" @onclick="() => EditArticle(lecture.LectureID)" data-bs-toggle="tooltip" data-bs-placement="top" title="Изменить статью">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </button>
-                                            @if (!lecture.IsApproved)
-                                            {
-                                                <button class="btn btn-success ms-2 flex-fill" @onclick="() => ApproveArticle(lecture.LectureID)" data-bs-toggle="tooltip" data-bs-placement="top" title="Одобрить статью">
-                                                    <i class="bi bi-check2-square"></i>
+                                        @if (BlazorUser.User != null && (BlazorUser.User.RoleId == 2 || lecture.CreatedBy == BlazorUser.User.UserId))
+                                        {
+                                            <div class="d-flex">
+                                                <button class="btn btn-primary flex-grow-1" @onclick="() => NavigateToArticle(lecture.LectureID)">Читать далее</button>
+                                                <button class="btn btn-danger ms-2 flex-fill" @onclick="() => DeleteArticle(lecture.LectureID)" data-bs-toggle="tooltip" data-bs-placement="top" title="Удалить статью">
+                                                    <i class="bi bi-trash3"></i>
                                                 </button>
-                                            }
-                                        </div>
+                                                <button class="btn btn-secondary ms-2 flex-fill" @onclick="() => EditArticle(lecture.LectureID)" data-bs-toggle="tooltip" data-bs-placement="top" title="Изменить статью">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </button>
+                                                @if (!lecture.IsApproved && BlazorUser.User.RoleId == 2)
+                                                {
+                                                    <button class="btn btn-success ms-2 flex-fill" @onclick="() => ApproveArticle(lecture.LectureID)" data-bs-toggle="tooltip" data-bs-placement="top" title="Одобрить статью">
+                                                        <i class="bi bi-check2-square"></i>
+                                                    </button>
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <a href="@($"/article/{lecture.LectureID}")" class="btn btn-primary mt-auto">Читать далее</a>
+                                        }
                                     </div>
                                 </div>
                             </div>
@@ -142,10 +149,22 @@
                                             <span class="float-end">@lecture.CreatedDate.ToShortDateString()</span>
                                         </p>
 
-                                        <a href="@($"/article/{lecture.LectureID}")" class="btn btn-primary mt-auto">Читать далее</a>
-                                        @* <div class="d-flex flex-fill">
-                            <button class="btn btn-primary flex-grow-1" @onclick="() => NavigateToArticle(lecture.LectureID)">Читать далее</button>
-                            </div> *@
+                                        @if (BlazorUser.User != null && lecture.CreatedBy == BlazorUser.User.UserId)
+                                        {
+                                            <div class="d-flex">
+                                                <button class="btn btn-primary flex-grow-1" @onclick="() => NavigateToArticle(lecture.LectureID)">Читать далее</button>
+                                                <button class="btn btn-danger ms-2 flex-fill" @onclick="() => DeleteArticle(lecture.LectureID)" data-bs-toggle="tooltip" data-bs-placement="top" title="Удалить статью">
+                                                    <i class="bi bi-trash3"></i>
+                                                </button>
+                                                <button class="btn btn-secondary ms-2 flex-fill" @onclick="() => EditArticle(lecture.LectureID)" data-bs-toggle="tooltip" data-bs-placement="top" title="Изменить статью">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </button>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <a href="@($"/article/{lecture.LectureID}")" class="btn btn-primary mt-auto">Читать далее</a>
+                                        }
                                     </div>
                                 </div>
                             </div>
@@ -305,6 +324,13 @@
                 return;
             }
 
+            // Проверяем, является ли текущий пользователь автором статьи или администратором
+            if (BlazorUser.User == null || (BlazorUser.User.UserId != lecture.CreatedBy && BlazorUser.User.RoleId != 2))
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "У вас нет прав на удаление этой статьи.");
+                return;
+            }
+
             // Удаляем статью
             var response = await client.DeleteAsync($"api/Lecture/{lectureId}");
             if (response.IsSuccessStatusCode)
@@ -355,8 +381,23 @@
 
     private void EditArticle(int lectureId)
     {
+        // Проверяем, является ли текущий пользователь автором статьи или администратором
+        var lecture = Lectures.FirstOrDefault(l => l.LectureID == lectureId);
+        if (lecture == null)
+        {
+            Console.WriteLine("Статья не найдена для редактирования.");
+            return;
+        }
+
+        if (BlazorUser.User == null || (BlazorUser.User.UserId != lecture.CreatedBy && BlazorUser.User.RoleId != 2))
+        {
+            JSRuntime.InvokeVoidAsync("alert", "У вас нет прав на редактирование этой статьи.");
+            return;
+        }
+
         NavigationManager.NavigateTo($"/edit-article/{lectureId}");
     }
+
     private void NavigateToArticle(int lectureId)
     {
         NavigationManager.NavigateTo($"/article/{lectureId}");
@@ -378,8 +419,8 @@
         // Получаем все уведомления
         var allNotifications = await client.GetFromJsonAsync<List<GetNotificationsResponse>>("api/Notifications");
 
-        // Фильтруем уведомления по UserId текущего пользователя
-        Notifications = allNotifications?.Where(n => n.UserId == BlazorUser.User.UserId).ToList();
+        // Фильтруем уведомления по UserId текущего пользователя и IsRead = false
+        Notifications = allNotifications?.Where(n => n.UserId == BlazorUser.User.UserId && !n.IsRead).ToList();
 
         ShowNotificationsFlag = true;
         IsLoadingNotifications = false;
@@ -391,21 +432,22 @@
         HttpClient client = new HttpClient();
         client.BaseAddress = new Uri("https://survivalschoolfinalapi.onrender.com/");
 
-        var notification = Notifications.FirstOrDefault(n => n.NotificationId == notificationId);
-        if (notification != null)
-        {
-            notification.IsRead = true;
-            var response = await client.PutAsJsonAsync($"api/Notifications/{notificationId}", notification);
+        var response = await client.PutAsync($"api/Notifications/read/{notificationId}", null);
 
-            if (response.IsSuccessStatusCode)
-            {
-                await JSRuntime.InvokeVoidAsync("alert", "Уведомление отмечено как прочитанное.");
-            }
-            else
-            {
-                await JSRuntime.InvokeVoidAsync("alert", "Не удалось отметить уведомление как прочитанное.");
-            }
+        if (response.IsSuccessStatusCode)
+        {
+            // Удаляем уведомление из локального списка
+            Notifications = Notifications.Where(n => n.NotificationId != notificationId).ToList();
+
+            await JSRuntime.InvokeVoidAsync("alert", "Уведомление отмечено как прочитанное.");
         }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Не удалось отметить уведомление как прочитанное.");
+        }
+
+        // Обновляем состояние компонента, чтобы изменения отобразились на странице
+        StateHasChanged();
     }
 
     private async Task CreateNotification(int userId, string notificationType, string notificationText)
