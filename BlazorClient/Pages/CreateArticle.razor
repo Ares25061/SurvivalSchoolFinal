@@ -4,62 +4,77 @@
 @inject BlazorUser BlazorUser
 @using Microsoft.AspNetCore.Components.Forms
 
-<h3>Создать статью</h3>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex align-items-center">
+                    <a href="/articles" class="btn btn-art">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                    <h3 class="mb-0 ms-3">Создать статью</h3>
+                </div>
+                <div class="card-body">
+                    <EditForm Model="@newLectureRequest" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
 
-<EditForm Model="@newLectureRequest" OnValidSubmit="HandleValidSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+                        <div class="form-group mb-3">
+                            <label for="title" class="form-label">Заголовок</label>
+                            <InputText id="title" class="form-control" @bind-Value="newLectureRequest.Title" />
+                            @if (ShowTitleMessage)
+                            {
+                                <p class="text-danger mt-2">Заголовок не введен или не соответствует требованиям</p>
+                            }
+                        </div>
 
-    <div class="form-group">
-        <label for="title">Заголовок</label>
-        <InputText id="title" class="form-control" @bind-Value="newLectureRequest.Title" />
-        @if (ShowTitleMessage)
-        {
-            <p class="text-danger">Заголовок не введен или не соответствует требованиям</p>
-        }
+                        <div class="form-group mb-3">
+                            <label for="content" class="form-label">Содержание</label>
+                            <InputTextArea id="content" class="form-control" rows="5"
+                                @bind-Value="newLectureRequest.Content" />
+                            @if (ShowContentMessage)
+                            {
+                                <p class="text-danger mt-2">Содержание не введено или не соответствует требованиям</p>
+                            }
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="categoryId" class="form-label">Категория</label>
+                            <InputSelect id="categoryId" class="form-control"
+                                @bind-Value="newLectureRequest.CategoryId">
+                                @foreach (var category in categories)
+                                {
+                                    <option value="@category.Key">@category.Value</option>
+                                }
+                            </InputSelect>
+                            @if (ShowCategoryMessage)
+                            {
+                                <p class="text-danger mt-2">Категория не выбрана или не соответствует требованиям</p>
+                            }
+                        </div>
+
+                        @*  <div class="form-group mb-3">
+                            <label for="photoUrl" class="form-label">URL фотографии (при наличии)</label>
+                            <InputText id="photoUrl" class="form-control" @bind-Value="newLectureRequest.PhotoUrl" />
+                        </div> *@
+
+                        <button type="submit" class="btn btn-primary" disabled="@IsLoading">
+                            @if (IsLoading)
+                            {
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                <span>Загрузка...</span>
+                            }
+                            else
+                            {
+                                <span>Добавить</span>
+                            }
+                        </button>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div class="form-group">
-        <label for="content">Содержание</label>
-        <InputTextArea id="content" class="form-control" @bind-Value="newLectureRequest.Content" />
-        @if (ShowContentMessage)
-        {
-            <p class="text-danger">Содержание не введено или не соответствует требованиям</p>
-        }
-    </div>
-
-    <div class="form-group">
-        <label for="categoryId">Категория</label>
-        <InputSelect id="categoryId" class="form-control" @bind-Value="newLectureRequest.CategoryId">
-            @foreach (var category in categories)
-            {
-                <option value="@category.Key">@category.Value</option>
-            }
-        </InputSelect>
-        @if (ShowCategoryMessage)
-        {
-            <p class="text-danger">Категория не выбрана или не соответствует требованиям</p>
-        }
-    </div>
-
-    @*  <div class="form-group">
-        <label for="photoUrl">URL фотографии (при наличии)</label>
-        <InputText id="photoUrl" class="form-control" @bind-Value="newLectureRequest.PhotoUrl" />
-    </div> *@
-
-    <button type="submit" class="btn btn-primary" disabled="@IsLoading">
-        @if (IsLoading)
-        {
-            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            <span>Загрузка...</span>
-        }
-        else
-        {
-            <span>Добавить</span>
-        }
-    </button>
-</EditForm>
-
+</div>
 @code {
     private CreateLectureRequest newLectureRequest = new CreateLectureRequest();
     private Dictionary<int, string> categories = new Dictionary<int, string>();

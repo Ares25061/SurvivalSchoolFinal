@@ -45,22 +45,22 @@
         <div class="col-md-12">
             <div class="d-flex justify-content-end mb-3">
                 <button class="btn btn-success" @onclick="CreateArticle">
-                    <i class="bi bi-plus-square data-bs-toggle="tooltip" data-bs-placement="top" title="Добавить статью"></i> 
+                    <i class="bi bi-plus-square"></i>
                 </button>
                 @if (BlazorUser.User != null && BlazorUser.User.RoleId == 2)
                 {
                     <button class="btn btn-warning ms-2" @onclick="ShowUnapprovedArticles">
-                        <i class="bi bi-eye  data-bs-toggle="tooltip" data-bs-placement="top" title="Посмотреть не одобренные статьи"></i>
+                        <i class="bi bi-eye"></i>
                     </button>
                 }
                 @if (BlazorUser.User != null)
                 {
                     <button class="btn btn-info ms-2" @onclick="ShowMyArticles">
-                        <i class="bi bi-bookmark-heart data-bs-toggle="tooltip" data-bs-placement="top" title="Посмотреть свои статьи"></i>
+                        <i class="bi bi-bookmark-heart"></i>
                     </button>
                 }
                 <button class="btn btn-secondary ms-2" @onclick="ShowAllArticles">
-                    <i class="bi bi-bookmarks data-bs-toggle="tooltip" data-bs-placement="top" title="Все стаьи"></i>
+                    <i class="bi bi-bookmarks"></i>
                 </button>
                 @if (BlazorUser.User != null)
                 {
@@ -91,6 +91,7 @@
                                     <p class="card-text flex-grow-1">
                                         @(lecture.Content.Length > 250 ? lecture.Content.Substring(0, 250) + "..." : lecture.Content)
                                     </p>
+                                    
 
                                     <p class="card-text">
                                         <i class="bi bi-person"></i> @lecture.Author
@@ -100,17 +101,17 @@
                                     @if (BlazorUser.User != null && (BlazorUser.User.RoleId == 2 || lecture.CreatedBy == BlazorUser.User.UserId))
                                     {
                                         <div class="d-flex">
-                                           <button class="btn btn-primary flex-grow-1" @onclick="() => NavigateToArticle(lecture.LectureID)">Читать далее</button>
-                                                <button class="btn btn-danger ms-2 flex-fill" @onclick="() => DeleteArticle(lecture.LectureID)" data-bs-toggle="tooltip" data-bs-placement="top" title="Удалить статью">
-                                                    <i class="bi bi-trash3"></i>
-                                                </button>
-                                                <button class="btn btn-secondary ms-2 flex-fill" @onclick="() => EditArticle(lecture.LectureID)" data-bs-toggle="tooltip" data-bs-placement="top" title="Изменить статью">
-                                                    <i class="bi bi-pencil-square"></i>
-                                                </button>
+                                            <button class="btn btn-primary flex-grow-1" @onclick="() => NavigateToArticle(lecture.LectureID)">Читать далее</button>
+                                            <button class="btn btn-danger ms-2 flex-fill" @onclick="() => DeleteArticle(lecture.LectureID)" data-bs-toggle="tooltip" data-bs-placement="top" title="Удалить статью">
+                                                <i class="bi bi-trash3"></i>
+                                            </button>
+                                            <button class="btn btn-secondary ms-2 flex-fill" @onclick="() => EditArticle(lecture.LectureID)" data-bs-toggle="tooltip" data-bs-placement="top" title="Изменить статью">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </button>
                                             @if (!lecture.IsApproved && BlazorUser.User.RoleId == 2)
                                             {
                                                 <button class="btn btn-success ms-2 flex-fill" @onclick="() => ApproveArticle(lecture.LectureID)" data-bs-toggle="tooltip" data-bs-placement="top" title="Одобрить статью">
-                                                        <i class="bi bi-check2-square"></i>
+                                                    <i class="bi bi-check2-square"></i>
                                                 </button>
                                             }
                                         </div>
@@ -130,6 +131,7 @@
 </div>
 
 
+
 <!-- Модальное окно -->
 <div class="modal fade" id="notificationsModal" tabindex="-1" aria-labelledby="notificationsModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -141,21 +143,25 @@
             <div class="modal-body">
                 @if (IsLoadingNotifications)
                 {
-                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    <span>Загрузка уведомлений...</span>
+                    <div class="d-flex justify-content-center align-items-center">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span class="ms-2">Загрузка уведомлений...</span>
+                    </div>
                 }
                 else if (Notifications != null && Notifications.Any())
                 {
-                   <ul class="list-group">
+                    <ul class="list-group">
                         @foreach (var notification in Notifications)
                         {
-                            <li class="list-group-item @(notification.IsRead ? "" : "unread") @(notification.NotificationType == "Одобрение статьи" ? "bg-success text-white" : "bg-danger text-white")" style="@(notification.IsRead ? "" : "background-color: #f8d7da;")">
+                            <li class="list-group-item mb-3 rounded @(notification.IsRead ? "" : "unread") @(notification.NotificationType == "Одобрение статьи" ? "bg-success text-white" : "bg-danger text-white")" style="@(notification.IsRead ? "" : "background-color: #f8d7da;")">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <strong>@notification.NotificationType:</strong> @notification.NotificationText
                                     </div>
                                     <div>
-                                        <button class="btn btn-sm btn-outline-light" @onclick="() => MarkNotificationAsRead(notification.NotificationId)">Прочитано</button>
+                                        <button class="btn " @onclick="() => MarkNotificationAsRead(notification.NotificationId)"  style = "width:10px height:10px">
+                                            <i class="bi bi-eye-fill btn-read-icon"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </li>
@@ -164,17 +170,17 @@
                 }
                 else
                 {
-                    <p>Уведомлений нет.</p>
+                    <p class="text-center">Уведомлений нет.</p>
                 }
             </div>
         </div>
     </div>
 </div>
+
 @code {
     private List<GetLectureResponse> Lectures;
     private bool ShowUnapproved = false;
     private bool ShowMyArticlesFlag = false;
-   @*    *@
     private List<GetNotificationsResponse> Notifications = new List<GetNotificationsResponse>();
     private bool ShowNotificationsFlag = false;
     private bool IsLoadingNotifications = false;
@@ -182,6 +188,7 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadLectures();
+        await ShowNotifications();
     }
 
     private async Task LoadLectures()
@@ -216,6 +223,8 @@
 
         Lectures = lectures;
 
+
+
         // Получаем информацию о пользователях для каждой лекции
         foreach (var lecture in Lectures)
         {
@@ -245,6 +254,8 @@
         else
         {
             NavigationManager.NavigateTo("/create-article");
+            // Создаем уведомление о создании статьи
+           
         }
     }
 
@@ -327,6 +338,7 @@
                 {
                     updatedLecture.IsApproved = true;
 
+
                     // Создаем уведомление об одобрении статьи
                     await CreateNotification(updatedLecture.CreatedBy, "Одобрение статьи", $"Ваша статья '{updatedLecture.Title}' была одобрена.");
                 }
@@ -364,9 +376,7 @@
         NavigationManager.NavigateTo($"/article/{lectureId}");
     }
 
-
-//УВЕДОМЛЕНИя
-   private async Task ShowNotifications()
+    private async Task ShowNotifications()
     {
         if (BlazorUser.User == null)
         {
@@ -383,65 +393,56 @@
         var allNotifications = await client.GetFromJsonAsync<List<GetNotificationsResponse>>("api/Notifications");
 
         // Фильтруем уведомления по UserId текущего пользователя и IsRead = false
-        Notifications = allNotifications?.Where(n => n.UserId == BlazorUser.User.UserId && !n.IsRead).ToList() ?? new List<GetNotificationsResponse>();
+        Notifications = allNotifications?.Where(n => n.UserId == BlazorUser.User.UserId && !n.IsRead).ToList();
 
+        ShowNotificationsFlag = true;
         IsLoadingNotifications = false;
         StateHasChanged();
     }
 
-private async Task MarkNotificationAsRead(int notificationId)
-{
-    HttpClient client = new HttpClient();
-    client.BaseAddress = new Uri("https://survivalschoolfinalapi.onrender.com/");
-
-    var notification = Notifications.FirstOrDefault(n => n.NotificationId == notificationId);
-    if (notification != null)
+    private async Task MarkNotificationAsRead(int notificationId)
     {
+        HttpClient client = new HttpClient();
+        client.BaseAddress = new Uri("https://survivalschoolfinalapi.onrender.com/");
+
         var response = await client.PutAsync($"api/Notifications/read/{notificationId}", null);
+
         if (response.IsSuccessStatusCode)
         {
-            notification.IsRead = true;
-            var updateResponse = await client.PutAsJsonAsync($"api/Notifications/{notificationId}", notification);
             // Удаляем уведомление из локального списка
             Notifications = Notifications.Where(n => n.NotificationId != notificationId).ToList();
 
-            if (updateResponse.IsSuccessStatusCode)
-            {
-                await JSRuntime.InvokeVoidAsync("alert", "Уведомление отмечено как прочитанное.");
-            }
-            else
-            {
-                await JSRuntime.InvokeVoidAsync("alert", "Не удалось отметить уведомление как прочитанное.");
-            }
+            await JSRuntime.InvokeVoidAsync("alert", "Уведомление отмечено как прочитанное.");
         }
         else
         {
             await JSRuntime.InvokeVoidAsync("alert", "Не удалось отметить уведомление как прочитанное.");
         }
+
         // Обновляем состояние компонента, чтобы изменения отобразились на странице
         StateHasChanged();
     }
-}
 
-private async Task CreateNotification(int userId, string notificationType, string notificationText)
-{
-    HttpClient client = new HttpClient();
-    client.BaseAddress = new Uri("https://survivalschoolfinalapi.onrender.com/");
-
-    var notification = new CreateNotificationsRequest
+    private async Task CreateNotification(int userId, string notificationType, string notificationText)
     {
-        UserId = userId,
-        NotificationType = notificationType,
-        NotificationText = notificationText
-    };
+        HttpClient client = new HttpClient();
+        client.BaseAddress = new Uri("https://survivalschoolfinalapi.onrender.com/");
 
-    var response = await client.PostAsJsonAsync("api/Notifications", notification);
+        var notification = new CreateNotificationsRequest
+            {
+                UserId = userId,
+                NotificationType = notificationType,
+                NotificationText = notificationText
+            };
 
-    if (!response.IsSuccessStatusCode)
-    {
-        await JSRuntime.InvokeVoidAsync("alert", "Не удалось создать уведомление.");
+        var response = await client.PostAsJsonAsync("api/Notifications", notification);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Не удалось создать уведомление.");
+        }
     }
-}
+
 
     public class GetLectureResponse
     {

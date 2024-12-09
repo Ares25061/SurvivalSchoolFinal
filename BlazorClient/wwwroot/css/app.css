@@ -134,7 +134,7 @@ button {
 }
 .btn-art {
     background-color: white; /* Желтый цвет фона */
-    border-color: #1b2e35; /* Желтый цвет границы */
+    border-color: #949494; /* Желтый цвет границы */
     color: #1b2e35; /* Темный цвет текста */
     font-weight: bold; /* Жирный текст */
     border-width: 2px;
@@ -213,4 +213,11 @@ button {
     color: red;
     font-weight: bold;
     margin-bottom: 10px;
+}
+
+
+
+.btn-read-icon {
+    color: white;
+    font-size: 1.2rem; /* Установите нужный размер иконки */
 }
