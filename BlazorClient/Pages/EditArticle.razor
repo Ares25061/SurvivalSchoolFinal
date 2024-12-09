@@ -42,10 +42,10 @@
         }
     </div>
 
-    <div class="form-group">
+    @*    <div class="form-group">
         <label for="photoUrl">URL фотографии</label>
         <InputText id="photoUrl" class="form-control" @bind-Value="editLectureRequest.PhotoUrl" />
-    </div>
+    </div> *@
 
     <button type="submit" class="btn btn-primary" disabled="@IsLoading">
         @if (IsLoading)
@@ -76,11 +76,11 @@
     {
         // Заполняем словарь категорий
         categories = new Dictionary<int, string>
-        {
-            { 1, "Лес" },
-            { 2, "Остров" },
-            { 3, "Колледж Царицыно" }
-        };
+{
+{ 1, "Лес" },
+{ 2, "Остров" },
+{ 3, "Колледж Царицыно" }
+};
 
         // Загружаем данные статьи для редактирования
         await LoadLectureData();
